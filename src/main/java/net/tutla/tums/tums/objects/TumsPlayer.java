@@ -16,12 +16,8 @@ public class TumsPlayer extends TumsEntity {
 
     public void setProps(){
         if (main != null){
-            updateProperty("display_name", main.getDisplayName());
-            updateProperty("uuid", main.getUUID());
-
             // Health & Inventory
             updateProperty("health", main.getHealth());
-
         }
 
     }

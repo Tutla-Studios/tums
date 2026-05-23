@@ -4,6 +4,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.tutla.tums.tums.EventType;
 import net.tutla.tums.tums.TumsLanguageInitializer;
+import net.tutla.tums.tusan.MinecraftEnvironment;
 import net.tutla.tums.tusan.interpreter.Interpreter;
 import net.tutla.tums.tusan.lang.Tusan;
 
@@ -30,7 +31,7 @@ public class Tums implements ModInitializer {
         TumsLanguageInitializer.init();
         registerAllDefaultEvents();
 
-        TumsAPI.runAllScripts(scriptsDir, TumsAPI.getGlobalTusan());
+        TumsAPI.runAllScripts(scriptsDir, TumsAPI.getGlobalTusan(), MinecraftEnvironment.SERVER);
     }
 
     public void resolveTumsDir(){

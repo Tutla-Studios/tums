@@ -50,7 +50,9 @@ public class FunctionNode extends Node { // named this way to avoid any conflict
                     interpreter.error("SyntaxError", "You cannot use required parameters after optional parameters", Arrays.asList("Move the optional parameters to the end of the function"));
                 }
             }
-
+            if (interpreter.tokenManager.get(interpreter.pos+2).type == PrebuiltTusanTokenType.IDENTIFIER){
+                interpreter.tokenManager.expectTokenType(PrebuiltTusanTokenType.COMMA);
+            }
             parameters.add(parameter);
         }
         interpreter.tokenManager.expectTokenType(PrebuiltTusanTokenType.RIGHT_PAR);
@@ -95,7 +97,7 @@ public class FunctionNode extends Node { // named this way to avoid any conflict
         tokens.add(new Token(PrebuiltTusanTokenType.ENDSCRIPT, "function", interpreter));
         TokenManager e = new TokenManager(functionInterpreter);
         e.setTokens(tokens);
-        functionInterpreter.setup(interpreter.data, e, null, null );
+        functionInterpreter.setup(interpreter.data, e, null, null, interpreter.getCompileEnvironment());
         interpreter.data.funcs.put(name, new FunctionRegistry(parameters, functionInterpreter));
 
         return this;

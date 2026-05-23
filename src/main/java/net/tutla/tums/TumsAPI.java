@@ -1,5 +1,6 @@
 package net.tutla.tums;
 
+import net.tutla.tums.tusan.MinecraftEnvironment;
 import net.tutla.tums.tusan.Variable;
 import net.tutla.tums.tusan.interpreter.Interpreter;
 import net.tutla.tums.tusan.lang.Tusan;
@@ -33,18 +34,18 @@ public class TumsAPI {
         return Tums.getTusan();
     }
 
-    public static void runAllScripts(Path scriptsDir, Tusan tusan){
+    public static void runAllScripts(Path scriptsDir, Tusan tusan, MinecraftEnvironment environment){
         try (Stream<Path> stream = Files.list(scriptsDir)) {
             stream.filter(Files::isRegularFile)
-                    .forEach((p) -> {runScript(p, tusan);});
+                    .forEach((p) -> {runScript(p, tusan, environment);});
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void runScript(Path script, Tusan tusan){
+    public static void runScript(Path script, Tusan tusan, MinecraftEnvironment environment){
         Interpreter interpreter = new Interpreter(tusan);
-        interpreter.setup(null,null,null, script);
+        interpreter.setup(null,null,null, script, environment);
 
         try{
             interpreter.compile(); // where every script in the dir gets executed
@@ -55,10 +56,14 @@ public class TumsAPI {
         getRegister().add(interpreter.data); // why are we doing this?
     }
 
-    public static void executeEvent(String name, HashMap<String, Variable> variables){
+    public static void executeEvent(String name, HashMap<String, Variable> variables, MinecraftEnvironment env){
         List<Interpreter> callback = Tums.getRegister().registry.events.get(name.toUpperCase());
+        if (variables == null){
+            variables = new HashMap<>();
+        }
         for (Interpreter executor : callback){
             Interpreter exec  = executor.clone();
+            exec.setCompileEnvironment(env);
             exec.tokenManager.changeTokensParent(exec);
             exec.data.vars.putAll(variables);
             executor.compile();

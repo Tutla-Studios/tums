@@ -7,6 +7,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.tutla.tums.Tums;
 import net.tutla.tums.TumsAPI;
+import net.tutla.tums.tusan.MinecraftEnvironment;
 import net.tutla.tums.tusan.Variable;
 import net.tutla.tums.tusan.interpreter.Interpreter;
 import net.tutla.tums.tums.objects.TumsEntity;
@@ -24,7 +25,7 @@ public class TumsClient implements ClientModInitializer {
     public void onInitializeClient() {
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> { // minecraft why did u make me take 2 hours to figure ts out
-            if (!mouseCallbackSet && client.getWindow() != null) {
+            if (!mouseCallbackSet) {
                 long handle = client.getWindow().handle();
 
                 GLFWMouseButtonCallbackI oldC = GLFW.glfwSetMouseButtonCallback(handle, null);
@@ -35,15 +36,9 @@ public class TumsClient implements ClientModInitializer {
                     }
                     if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
                         if (action == GLFW.GLFW_PRESS){
-                            List<Interpreter> callback = TumsAPI.getRegister().registry.events.get("LEFT_CLICK");
-                            for (Interpreter executor : callback){
-                                executor.compile();
-                            }
+                            TumsAPI.executeEvent("LEFT_CLICK", null, MinecraftEnvironment.CLIENT);
                         } else if (action == GLFW.GLFW_RELEASE){
-                            List<Interpreter> callback = Tums.register.registry.events.get("LEFT_RELEASE");
-                            for (Interpreter executor : callback){
-                                executor.compile();
-                            }
+                            TumsAPI.executeEvent("LEFT_RELEASE", null, MinecraftEnvironment.CLIENT);
                         }
 
                     }
@@ -56,14 +51,14 @@ public class TumsClient implements ClientModInitializer {
         AttackEntityCallback.EVENT.register((player, world, hand, target, hitResult) -> {
             if (world.isClientSide()) {
                 HashMap<String, Variable> variables = new HashMap<>();
-                if (target instanceof Player otherPlayer) {
+                if (player instanceof Player otherPlayer) {
                     variables.put("event_player", new TumsPlayer("event_player", otherPlayer));
                     variables.put("event_entity", new TumsEntity("event_entity", target));
                 } else {
                     variables.put("event_player", new TumsPlayer("event_player", null));
                     variables.put("event_entity", new TumsEntity("event_entity", target));
                 }
-                TumsAPI.executeEvent("attack", variables);
+                TumsAPI.executeEvent("attack", variables, MinecraftEnvironment.CLIENT);
             }
             return InteractionResult.PASS;
         });

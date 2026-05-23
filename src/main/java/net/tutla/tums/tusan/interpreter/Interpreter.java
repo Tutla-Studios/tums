@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+import net.tutla.tums.tusan.MinecraftEnvironment;
 import net.tutla.tums.tusan.lang.Tusan;
 import net.tutla.tums.tusan.TusanContext;
 import net.tutla.tums.tusan.Utils;
@@ -35,13 +36,15 @@ public class Interpreter {
     public int pos = 0;
     public Token currentToken;
 
+    private MinecraftEnvironment compileEnvironment = MinecraftEnvironment.SERVER;
+
 
     public Interpreter(Tusan tusan) {
         this.tusan = tusan;
         this.lang = tusan.getLang();
     }
 
-    public void setup(InterpreterData data, TokenManager tknmanager, String _text, Path file){
+    public void setup(InterpreterData data, TokenManager tknmanager, String _text, Path file, MinecraftEnvironment env){
         this.data = data != null ? data : new InterpreterData(null, null, null, null);
 
         if (_text != null) {
@@ -64,6 +67,10 @@ public class Interpreter {
             tokenManager.changeTokensParent(this);
         }
 
+        if (env != null){
+            compileEnvironment = env;
+        }
+
         this.currentToken = tokenManager.get(this.pos);
     }
 
@@ -82,6 +89,9 @@ public class Interpreter {
         }*/
 
         TusanContext ctx = new TusanContext(this);
+        if (compileEnvironment == MinecraftEnvironment.CLIENT){
+            ctx.setEnvironment(MinecraftEnvironment.CLIENT);
+        }
         tusan.compile(ctx);
     }
 
@@ -162,7 +172,7 @@ public class Interpreter {
 
     public Interpreter clone(){
         Interpreter intr = new Interpreter(tusan);
-        intr.setup(data, tokenManager, text, filePath);
+        intr.setup(data, tokenManager, text, filePath, intr.getCompileEnvironment());
         return intr;
     }
 
@@ -173,4 +183,16 @@ public class Interpreter {
     public Tusan getTusan(){
         return tusan;
     }
+
+    public MinecraftEnvironment getCompileEnvironment(){
+        return compileEnvironment;
+    }
+
+    public void setCompileEnvironment(MinecraftEnvironment env){
+        if (env == null){
+            env = MinecraftEnvironment.SERVER;
+        }
+        this.compileEnvironment = env;
+    }
+
 }

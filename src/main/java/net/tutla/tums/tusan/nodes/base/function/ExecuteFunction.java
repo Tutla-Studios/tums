@@ -44,6 +44,10 @@ public class ExecuteFunction extends Node {
             } else { // putting the optional ones into a hashmap
                 optionalParameters.put(parameter.name, parameter);
             }
+            if(parameters.size()-1 != parameterPointer){
+                interpreter.tokenManager.expectTokenType(PrebuiltTusanTokenType.COMMA);
+            }
+            parameterPointer++;
         }
 
         while (optionalParameters.containsKey(interpreter.tokenManager.getNextToken().value)){ // evaluating the optional ones

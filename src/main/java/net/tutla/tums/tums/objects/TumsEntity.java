@@ -17,6 +17,7 @@ public class TumsEntity extends Variable {
     public void setProps(){
         updateProperty("name", Objects.requireNonNull(main.getDisplayName()).getString());
         updateProperty("nametag", main.getCustomName());
+        updateProperty("uuid", main.getUUID());
 
         // Health & Inventory
 
@@ -26,7 +27,6 @@ public class TumsEntity extends Variable {
         updateProperty("z", main.getY());
         updateProperty("yaw", main.getYRot());
         updateProperty("pitch", main.getXRot());
-
 
         updateProperty("javaclass", main);
     }

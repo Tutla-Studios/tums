@@ -4,6 +4,7 @@ import net.tutla.tums.TumsAPI;
 import net.tutla.tums.tusan.interpreter.Interpreter;
 import net.tutla.tums.tusan.interpreter.TokenManager;
 import net.tutla.tums.tusan.lexer.Token;
+import net.tutla.tums.tusan.lexer.util.prebuilt.PrebuiltTusanTokenGroup;
 import net.tutla.tums.tusan.lexer.util.prebuilt.PrebuiltTusanTokenType;
 import net.tutla.tums.tusan.nodes.expression.Expression;
 import net.tutla.tums.tums.EventType;
@@ -177,7 +178,7 @@ public class Utils {
                     structures--;
                 }
             } else {
-                if (nxt.type == PrebuiltTusanTokenType.STRUCTURE) {
+                if (nxt.group == PrebuiltTusanTokenGroup.STRUCTURE) {
                     structures++;
                 }
                 tokens.add(nxt);

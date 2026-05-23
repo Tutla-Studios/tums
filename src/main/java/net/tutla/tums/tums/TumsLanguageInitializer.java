@@ -14,11 +14,11 @@ public class TumsLanguageInitializer {
                 new LexerRule(PrebuiltTusanTokenType.ON, WordedPattern.makeOneWordPattern("on"))
                         .setGroup(PrebuiltTusanTokenGroup.STRUCTURE));
         TumsAPI.getGlobalTusan().registerLexerRule(
-                new LexerRule(PrebuiltTusanTokenType.WAIT, WordedPattern.makeOneWordPattern("wait"))
+                new LexerRule(TumsTokenType.WAIT, WordedPattern.makeOneWordPattern("wait"))
                         .setGroup(PrebuiltTusanTokenGroup.EFFECT));
 
         TumsAPI.getGlobalTusan().linkNodeToStatement(PrebuiltTusanTokenType.ON, On.class);
-        TumsAPI.getGlobalTusan().linkNodeToStatement(PrebuiltTusanTokenType.WAIT, Wait.class);
+        TumsAPI.getGlobalTusan().linkNodeToStatement(TumsTokenType.WAIT, Wait.class);
 
 
         TumsAPI.getGlobalTusan().registerLexerRule(new LexerRule(TumsTokenType.HELLO, WordedPattern.makeOneWordPattern("hello")));

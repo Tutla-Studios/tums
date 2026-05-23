@@ -34,9 +34,8 @@ public class On extends Node {
             TokenManager e = new TokenManager(intr);
             e.setTokens(tokens);
             intr.setup(interpreter.data,e,
-                    null, null);
+                    null, null, interpreter.getCompileEnvironment());
             ((List) interpreter.data.events.get(eventOriginal)).add(intr);
-
         } else {
             interpreter.error("NoEventImplementation", "There seems to be no implementation to "+eventOriginal, null);
         }

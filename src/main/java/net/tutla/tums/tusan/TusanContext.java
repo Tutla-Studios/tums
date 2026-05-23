@@ -11,8 +11,8 @@ public class TusanContext {
     public Interpreter interpreter;
     public TokenManager tokenContext;
     public boolean isFunction;
-    public int pos;
 
+    public MinecraftEnvironment environment = MinecraftEnvironment.SERVER;
 
     public TusanContext(Interpreter interpreter){
         this.interpreter = interpreter;
@@ -45,5 +45,7 @@ public class TusanContext {
         return interpreter.getTusan();
     }
 
-
+    public void setEnvironment(MinecraftEnvironment env){
+        this.environment = env;
+    }
 }

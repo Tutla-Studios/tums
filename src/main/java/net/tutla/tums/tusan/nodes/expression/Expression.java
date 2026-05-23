@@ -94,18 +94,20 @@ public class Expression extends Node {
         return this;
     }
 
-    private Object compare(Token op, Term term1, Expression term2){
+    private Object compare(Token op, Term term1, Expression term2) {
         switch (op.value) {
             case "==", "is" -> value = Objects.equals(term1.value, term2.value);
-            case "!=" -> value = !Objects.equals(term1.value, term2.value);
+            case "!="       -> value = !Objects.equals(term1.value, term2.value);
             default -> {
-                if (!(term1.value instanceof Double) || !(term2.value instanceof Double))
+                if (!(term1.value instanceof Number) || !(term2.value instanceof Number))
                     interpreter.error("TypeError", "Expected numbers for comparison " + op.value, null);
+                double a = ((Number) term1.value).doubleValue();
+                double b = ((Number) term2.value).doubleValue();
                 switch (op.value) {
-                    case "<"  -> value = (Double) term1.value <  (Double) term2.value;
-                    case ">"  -> value = (Double) term1.value >  (Double) term2.value;
-                    case "<=" -> value = (Double) term1.value <= (Double) term2.value;
-                    case ">=" -> value = (Double) term1.value >= (Double) term2.value;
+                    case "<"           -> value = a <  b;
+                    case ">"           -> value = a >  b;
+                    case "<="          -> value = a <= b;
+                    case ">="          -> value = a >= b;
                     case null, default -> interpreter.error("InvalidComparison", "Invalid comparison " + op.value, null);
                 }
             }
