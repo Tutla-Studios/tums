@@ -3,13 +3,13 @@ package net.tutla.tums;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.tutla.tums.tums.EventType;
+import net.tutla.tums.tums.TumsLanguageInitializer;
 import net.tutla.tums.tusan.interpreter.Interpreter;
 import net.tutla.tums.tusan.lang.Tusan;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.stream.Stream;
 
 public class Tums implements ModInitializer {
     private static final Tusan tusan = Tusan.tusan(); // primary language
@@ -26,7 +26,10 @@ public class Tums implements ModInitializer {
     @Override
     public void onInitialize() {
         resolveTumsDir();
+
+        TumsLanguageInitializer.init();
         registerAllDefaultEvents();
+
         TumsAPI.runAllScripts(scriptsDir, TumsAPI.getGlobalTusan());
     }
 

@@ -13,7 +13,6 @@ import net.tutla.tums.tusan.nodes.base.Return;
 import net.tutla.tums.tusan.nodes.base.function.FunctionNode;
 import net.tutla.tums.tusan.nodes.base.loops.Loop;
 import net.tutla.tums.tusan.nodes.base.loops.While;
-import net.tutla.tums.tums.nodes.On;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,8 +50,6 @@ public class Tusan {
             new LexerRule(PrebuiltTusanTokenType.WHILE, WordedPattern.makeOneWordPattern("while"))
                     .setGroup(PrebuiltTusanTokenGroup.STRUCTURE),
             new LexerRule(PrebuiltTusanTokenType.LOOP, WordedPattern.makeOneWordPattern("loop"))
-                    .setGroup(PrebuiltTusanTokenGroup.STRUCTURE),
-            new LexerRule(PrebuiltTusanTokenType.ON, WordedPattern.makeOneWordPattern("on"))
                     .setGroup(PrebuiltTusanTokenGroup.STRUCTURE),
             new LexerRule(PrebuiltTusanTokenType.FUNCTION, WordedPattern.makeOneWordPattern("function"))
                     .setGroup(PrebuiltTusanTokenGroup.STRUCTURE)
@@ -102,7 +99,6 @@ public class Tusan {
         linkNodeToStatement(PrebuiltTusanTokenType.IF, If.class);
         linkNodeToStatement(PrebuiltTusanTokenType.WHILE, While.class);
         linkNodeToStatement(PrebuiltTusanTokenType.LOOP, Loop.class);
-        linkNodeToStatement(PrebuiltTusanTokenType.ON, On.class);
         linkNodeToStatement(PrebuiltTusanTokenType.FUNCTION, FunctionNode.class);
     }
 

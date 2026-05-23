@@ -1,7 +1,8 @@
-package net.tutla.tums.tums.nodes;
+package net.tutla.tums.tums.nodes.structure;
 
 import net.tutla.tums.TumsAPI;
 import net.tutla.tums.tusan.TusanContext;
+import net.tutla.tums.tusan.Utils;
 import net.tutla.tums.tusan.node.Node;
 import net.tutla.tums.tusan.interpreter.Interpreter;
 import net.tutla.tums.tusan.interpreter.TokenManager;
@@ -9,12 +10,10 @@ import net.tutla.tums.tusan.lexer.Token;
 import net.tutla.tums.tusan.lexer.util.prebuilt.PrebuiltTusanTokenType;
 import net.tutla.tums.tusan.node.NodeConfig;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class On extends Node {
     private Integer structures = 0;
-    public List<Token> tokens = new ArrayList<>();
 
     public On(TusanContext ctx){
         super(ctx);
@@ -28,26 +27,9 @@ public class On extends Node {
         String eventOriginal = interpreter.tokenManager.expectTokenType(PrebuiltTusanTokenType.EVENT).value.toUpperCase();
 
         if (TumsAPI.getEventMappings().contains(eventOriginal)){
-            Boolean end = false;
-
-            while (!end){
-                Token nxt = interpreter.tokenManager.nextToken();
-                if (nxt.type == PrebuiltTusanTokenType.ENDSTRUCTURE){
-                    if (structures == 0){
-                        end = true;
-                    } else {
-                        tokens.add(nxt);
-                        structures--;
-                    }
-                } else {
-                    if (nxt.type == PrebuiltTusanTokenType.STRUCTURE) {
-                        structures++;
-                    }
-                    tokens.add(nxt);
-                }
-
-            }
+            List<Token> tokens = Utils.collectInnerTokens(interpreter.tokenManager);
             tokens.add(new Token(PrebuiltTusanTokenType.ENDSCRIPT, "event", interpreter));
+
             Interpreter intr = new Interpreter(ctx.getTusan());
             TokenManager e = new TokenManager(intr);
             e.setTokens(tokens);

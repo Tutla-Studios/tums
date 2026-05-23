@@ -45,4 +45,5 @@ public enum PrebuiltTusanTokenType implements TokenType { // these are currently
     LOOP,
     FUNCTION,
 
+    WAIT
 }

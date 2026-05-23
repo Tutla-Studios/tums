@@ -1,8 +1,7 @@
-package net.tutla.tums.tusan.nodes.effects;
+package net.tutla.tums.tums.nodes.effect;
 
 import net.tutla.tums.tusan.TusanContext;
 import net.tutla.tums.tusan.node.Node;
-import net.tutla.tums.tusan.lexer.Token;
 import net.tutla.tums.tusan.nodes.expression.Expression;
 
 public class Wait extends Node {

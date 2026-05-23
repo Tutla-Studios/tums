@@ -2,6 +2,7 @@ package net.tutla.tums.tusan;
 
 import net.tutla.tums.TumsAPI;
 import net.tutla.tums.tusan.interpreter.Interpreter;
+import net.tutla.tums.tusan.interpreter.TokenManager;
 import net.tutla.tums.tusan.lexer.Token;
 import net.tutla.tums.tusan.lexer.util.prebuilt.PrebuiltTusanTokenType;
 import net.tutla.tums.tusan.nodes.expression.Expression;
@@ -161,4 +162,28 @@ public class Utils {
         }
     }
 
+    public static List<Token> collectInnerTokens(TokenManager tokenManager){
+        Boolean end = false;
+        int structures = 0;
+        List<Token> tokens = new ArrayList<>();
+
+        while (!end){
+            Token nxt = tokenManager.nextToken();
+            if (nxt.type == PrebuiltTusanTokenType.ENDSTRUCTURE){
+                if (structures == 0){
+                    end = true;
+                } else {
+                    tokens.add(nxt);
+                    structures--;
+                }
+            } else {
+                if (nxt.type == PrebuiltTusanTokenType.STRUCTURE) {
+                    structures++;
+                }
+                tokens.add(nxt);
+            }
+        }
+
+        return tokens;
+    }
 }
