@@ -39,10 +39,6 @@ public class Interpreter {
     public Interpreter(Tusan tusan) {
         this.tusan = tusan;
         this.lang = tusan.getLang();
-        // where api testing goes
-        tusan.registerLexerRule(new LexerRule(TumsTokenType.HELLO, "\\bhello\\b"));
-        tusan.registerNode(HelloNode.class);
-        /// /////////////////////
     }
 
     public void setup(InterpreterData data, TokenManager tknmanager, String _text, Path file){
