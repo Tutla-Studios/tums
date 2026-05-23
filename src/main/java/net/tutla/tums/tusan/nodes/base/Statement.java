@@ -28,9 +28,9 @@ public class Statement extends Node {
             interpreter.tokenManager.expectTokenType(PrebuiltTusanTokenType.RIGHT_CURLY);
             return value;
         }
-        if (validTypes.contains(token.type) || token.group == PrebuiltTusanTokenGroup.STRUCTURE){
-            if (token.type == PrebuiltTusanTokenType.EFFECT){
-                value = new Effect(ctx).create();
+        if (validTypes.contains(token.type) || token.group == PrebuiltTusanTokenGroup.STRUCTURE || token.group == PrebuiltTusanTokenGroup.EFFECT){
+            if (token.type == PrebuiltTusanTokenType.EFFECT || token.group == PrebuiltTusanTokenGroup.EFFECT){ // TODO: Remove type and make it only group
+                value = new Effect(ctx).run();
             } else if (token.group == PrebuiltTusanTokenGroup.STRUCTURE){
                 AtomicBoolean execed = new AtomicBoolean(false);
                 ctx.getTusan().getStatementNodeMap().getTokenMap()
@@ -41,7 +41,7 @@ public class Statement extends Node {
                                 if(!newNode.getNodeConfig().isDontSendNext()) {
                                     ctx.nextToken();
                                 }
-                                newNode.run(ctx);
+                                newNode.run();
                                 execed.set(true);
                             }
                 });

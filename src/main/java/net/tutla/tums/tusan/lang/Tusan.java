@@ -53,7 +53,9 @@ public class Tusan {
             new LexerRule(PrebuiltTusanTokenType.LOOP, WordedPattern.makeOneWordPattern("loop"))
                     .setGroup(PrebuiltTusanTokenGroup.STRUCTURE),
             new LexerRule(PrebuiltTusanTokenType.FUNCTION, WordedPattern.makeOneWordPattern("function"))
-                    .setGroup(PrebuiltTusanTokenGroup.STRUCTURE)
+                    .setGroup(PrebuiltTusanTokenGroup.STRUCTURE),
+
+            new LexerRule(PrebuiltTusanTokenType.PRINT, WordedPattern.makeOneWordPattern("print")).setGroup(PrebuiltTusanTokenGroup.EFFECT)
     );
 
     public Tusan(){
@@ -78,7 +80,7 @@ public class Tusan {
         return nodes;
     }
 
-    public void linkNodeToStatement(TokenType tokenType, Class<? extends Node> node){
+    public void linkNodeToStatement(TokenType tokenType, Class<? extends Node> node){ // TODO: links for category nodes aswell
         statementNodeMap.add(tokenType, node);
     }
 

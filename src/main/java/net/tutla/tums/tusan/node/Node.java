@@ -32,18 +32,16 @@ public class Node {
 
     }
 
-    public Node run(TusanContext ctx){
+    public Node run(){
         boolean runCreate = true;
         if (nodeConf.isCategory()){
             nodeConf.getEffectiveTokens().getTokenMap().forEach((ttype, node) -> {
                 if (ttype == ctx.getCurrentToken().type){
-                    try {
-                        Node n = node.getDeclaredConstructor().newInstance();
-                        n.run(ctx);
-                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                             NoSuchMethodException e) {
-                        throw new RuntimeException(e);
+                    Node newNode = Node.instantiateNode(node, ctx);
+                    if(!newNode.getNodeConfig().isDontSendNext()) {
+                        ctx.nextToken();
                     }
+                    newNode.run();
                 }
             });
 
