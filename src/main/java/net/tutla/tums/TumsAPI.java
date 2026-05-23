@@ -27,7 +27,7 @@ public class TumsAPI {
     }
 
     public static Tusan blank(){
-        return new Tusan();
+        return Tusan.tusan();
     }
 
     public static Tusan getGlobalTusan(){

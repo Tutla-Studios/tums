@@ -22,6 +22,7 @@ public class Tusan {
     private final List<Class<? extends Node>> nodes = new ArrayList<>();
 
     private final Token2NodeMap statementNodeMap = new Token2NodeMap();
+    private Class<? extends Node> statementNode = Statement.class;
 
     private static final List<LexerRule> DEFAULT_LEXER_RULES = List.of( // ORDER MATTERS!
             new LexerRule(PrebuiltTusanTokenType.PROPERTY, "'s(?!['\"])"),
@@ -119,7 +120,8 @@ public class Tusan {
                 ctx.tokenContext.nextToken();
                 new Return(ctx).create();
             } else {
-                new Statement(ctx).create();
+                Node stmtNode = Node.instantiateNode(statementNode, ctx);
+                stmtNode.create();
             }
             if (ctx.tokenContext.getNextToken() == null){
                 ctx.interpreter.meetEnd();
@@ -136,5 +138,13 @@ public class Tusan {
 
     public TusanLanguageRules getLang(){
         return lang;
+    }
+
+    public Class<? extends Node> getStatementNode() {
+        return statementNode;
+    }
+
+    public void setStatementNode(Class<? extends Node> statementNode) {
+        this.statementNode = statementNode;
     }
 }
