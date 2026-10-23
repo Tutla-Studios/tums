@@ -19,6 +19,8 @@ public class Interpreter {
     private final Tusan tusan;
     private TusanLanguageRules lang;
 
+    private TusanContext ctx = null;
+
     public Utils util = new Utils();
 
     public InterpreterData data;
@@ -88,11 +90,17 @@ public class Interpreter {
             System.out.print("\n");
         }*/
 
-        TusanContext ctx = new TusanContext(this);
+        if (ctx == null){
+            setContext(new TusanContext(this));
+        }
         if (compileEnvironment == MinecraftEnvironment.CLIENT){
             ctx.setEnvironment(MinecraftEnvironment.CLIENT);
         }
         tusan.compile(ctx);
+    }
+
+    public void setContext(TusanContext ctx){
+        this.ctx = ctx;
     }
 
     // utils

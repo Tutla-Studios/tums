@@ -5,8 +5,6 @@ import net.tutla.tums.tusan.interpreter.TokenManager;
 import net.tutla.tums.tusan.lang.Tusan;
 import net.tutla.tums.tusan.lexer.Token;
 
-import java.lang.reflect.Constructor;
-
 public class TusanContext {
     public Interpreter interpreter;
     public TokenManager tokenContext;
@@ -47,5 +45,9 @@ public class TusanContext {
 
     public void setEnvironment(MinecraftEnvironment env){
         this.environment = env;
+    }
+
+    public MinecraftEnvironment getEnvironment(){
+        return environment;
     }
 }

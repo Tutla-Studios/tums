@@ -112,4 +112,8 @@ public class TokenManager {
     public int length(){
         return tokens.toArray().length;
     }
+
+    public int getPos(){
+        return interpreter.pos;
+    }
 }

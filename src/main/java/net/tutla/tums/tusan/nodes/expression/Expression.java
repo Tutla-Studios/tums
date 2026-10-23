@@ -23,7 +23,6 @@ public class Expression extends Node {
             opposite = true;
             interpreter.tokenManager.nextToken();
         }
-
         Term term1 = new Term(ctx).create();
         if (Arrays.asList(PrebuiltTusanTokenType.OPERATOR, PrebuiltTusanTokenType.COMPARISON).contains(interpreter.tokenManager.getNextToken().type)){
             Token op = interpreter.tokenManager.nextToken();
