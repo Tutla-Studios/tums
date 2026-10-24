@@ -62,7 +62,7 @@ public class Lexer {
             if (!matched) {
                 if (matcher.group("IDENTIFIER") != null) {
                     String value = matcher.group("IDENTIFIER");
-
+                    
                     if (keywords.contains(value)) {
                         register(PrebuiltTusanTokenType.KEYWORD, value, PrebuiltTusanTokenGroup.KEYWORD);
                     } else if (effects.contains(value)) {

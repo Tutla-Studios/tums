@@ -22,32 +22,32 @@ public class Statement extends Node {
             return false;
         }
 
-        if (token.type == PrebuiltTusanTokenType.LEFT_CURLY){
+        if (token.type == PrebuiltTusanTokenType.LEFT_CURLY){ // TODO: make this an overridable rule
             interpreter.tokenManager.nextToken();
             new Statement(ctx).create();
             interpreter.tokenManager.expectTokenType(PrebuiltTusanTokenType.RIGHT_CURLY);
             return value;
         }
-        if (validTypes.contains(token.type) || token.group == PrebuiltTusanTokenGroup.STRUCTURE || token.group == PrebuiltTusanTokenGroup.EFFECT){
+        if (token.group == PrebuiltTusanTokenGroup.STRUCTURE || ctx.getTusan().getStatementNodeMap().getTokenMap().containsKey(token.type)){
+            AtomicBoolean execed = new AtomicBoolean(false);
+            ctx.getTusan().getStatementNodeMap().getTokenMap()
+                    .forEach((tok, node) -> {
+                        if (token.type == tok){
+                            // TODO: full node execution based on config
+                            Node newNode = Node.instantiateNode(node, ctx);
+                            if(!newNode.getNodeConfig().isDontSendNext()) {
+                                ctx.nextToken();
+                            }
+                            newNode.run();
+                            execed.set(true);
+                        }
+                    });
+            if (!execed.get()){
+                interpreter.error("UnexpectedToken", "Structure " + token.type.name() + ":" + token.value + " has no definition", null);
+            }
+        } else if (validTypes.contains(token.type) || token.group == PrebuiltTusanTokenGroup.STRUCTURE || token.group == PrebuiltTusanTokenGroup.EFFECT){
             if (token.type == PrebuiltTusanTokenType.EFFECT || token.group == PrebuiltTusanTokenGroup.EFFECT){ // TODO: Remove type and make it only group
                 value = new Effect(ctx).run();
-            } else if (token.group == PrebuiltTusanTokenGroup.STRUCTURE){
-                AtomicBoolean execed = new AtomicBoolean(false);
-                ctx.getTusan().getStatementNodeMap().getTokenMap()
-                        .forEach((tok, node) -> {
-                            if (token.type == tok){
-                                // TODO: full node execution based on config
-                                Node newNode = Node.instantiateNode(node, ctx);
-                                if(!newNode.getNodeConfig().isDontSendNext()) {
-                                    ctx.nextToken();
-                                }
-                                newNode.run();
-                                execed.set(true);
-                            }
-                });
-                if (!execed.get()){
-                    interpreter.error("UnexpectedToken", "Structure " + token.type.name() + ":" + token.value + " has no definition", null);
-                }
             } else if (Arrays.asList(PrebuiltTusanTokenType.IDENTIFIER, PrebuiltTusanTokenType.LEFT_CURLY, PrebuiltTusanTokenType.NUMBER, PrebuiltTusanTokenType.STRING, PrebuiltTusanTokenType.KEYWORD).contains(token.type)){
                 value = new Expression(ctx).create();
             } else if (token.type ==  PrebuiltTusanTokenType.BREAKSTRUCTURE){
