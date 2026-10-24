@@ -28,17 +28,21 @@ public class Statement extends Node {
             interpreter.tokenManager.expectTokenType(PrebuiltTusanTokenType.RIGHT_CURLY);
             return value;
         }
-        if (token.group == PrebuiltTusanTokenGroup.STRUCTURE || ctx.getTusan().getStatementNodeMap().getTokenMap().containsKey(token.type)){
+        if (token.group == PrebuiltTusanTokenGroup.STRUCTURE || ctx.getTusan().getStatementTokenNodeMap().getTokenMap().containsKey(token.type) || ctx.getTusan().getStatementTokenGroupNodeMap().getTokenMap().containsKey(token.group)){
             AtomicBoolean execed = new AtomicBoolean(false);
-            ctx.getTusan().getStatementNodeMap().getTokenMap()
+            ctx.getTusan().getStatementTokenNodeMap().getTokenMap()
                     .forEach((tok, node) -> {
                         if (token.type == tok){
                             // TODO: full node execution based on config
-                            Node newNode = Node.instantiateNode(node, ctx);
-                            if(!newNode.getNodeConfig().isDontSendNext()) {
-                                ctx.nextToken();
-                            }
-                            newNode.run();
+                            instantiateNode(node, ctx);
+                            execed.set(true);
+                        }
+                    });
+            ctx.getTusan().getStatementTokenGroupNodeMap().getTokenMap()
+                    .forEach((tokGrp, node) -> {
+                        if (token.group == tokGrp){
+                            // TODO: full node execution based on config
+                            instantiateNode(node, ctx);
                             execed.set(true);
                         }
                     });
@@ -61,5 +65,13 @@ public class Statement extends Node {
             interpreter.error("UnexpectedToken", "Expected valid statement got "+token.type.name()+":"+token.value, null);
         }
         return value;
+    }
+
+    private void instantiateNode(Class<? extends Node> node, TusanContext ctx){
+        Node newNode = Node.instantiateNode(node, ctx);
+        if(!newNode.getNodeConfig().isDontSendNext()) {
+            ctx.nextToken();
+        }
+        newNode.run();
     }
 }

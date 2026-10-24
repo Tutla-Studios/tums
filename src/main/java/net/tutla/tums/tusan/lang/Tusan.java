@@ -7,6 +7,7 @@ import net.tutla.tums.tusan.node.Node;
 import net.tutla.tums.tusan.TusanContext;
 import net.tutla.tums.tusan.lexer.*;
 import net.tutla.tums.tusan.node.Token2NodeMap;
+import net.tutla.tums.tusan.node.TokenGroup2NodeMap;
 import net.tutla.tums.tusan.nodes.base.Statement;
 import net.tutla.tums.tusan.nodes.base.If;
 import net.tutla.tums.tusan.nodes.base.Return;
@@ -21,7 +22,8 @@ public class Tusan {
     private final TusanLanguageRules lang = new TusanLanguageRules();
     private final List<Class<? extends Node>> nodes = new ArrayList<>();
 
-    private final Token2NodeMap statementNodeMap = new Token2NodeMap();
+    private final Token2NodeMap statementTokenNodeMap = new Token2NodeMap();
+    private final TokenGroup2NodeMap statementTokenGroupNodeMap = new TokenGroup2NodeMap();
     private Class<? extends Node> statementNode = Statement.class;
 
     private static final List<LexerRule> DEFAULT_LEXER_RULES = List.of( // ORDER MATTERS!
@@ -81,11 +83,19 @@ public class Tusan {
     }
 
     public void linkNodeToStatement(TokenType tokenType, Class<? extends Node> node){ // TODO: links for category nodes aswell
-        statementNodeMap.add(tokenType, node);
+        statementTokenNodeMap.add(tokenType, node);
     }
 
-    public Token2NodeMap getStatementNodeMap(){
-        return statementNodeMap;
+    public void linkNodeToStatement(TokenGroup tokenGroup, Class<? extends Node> node){ // TODO: links for category nodes aswell
+        statementTokenGroupNodeMap.add(tokenGroup, node);
+    }
+
+    public Token2NodeMap getStatementTokenNodeMap(){
+        return statementTokenNodeMap;
+    }
+
+    public TokenGroup2NodeMap getStatementTokenGroupNodeMap(){
+        return statementTokenGroupNodeMap;
     }
 
     /// /////////////////////////////
