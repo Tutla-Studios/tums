@@ -1,8 +1,7 @@
 package net.tutla.tums.tusan.interpreter;
 
 import net.tutla.tums.tusan.lexer.Token;
-import net.tutla.tums.tusan.lexer.util.prebuilt.PrebuiltTusanTokenType;
-
+import net.tutla.tums.tusan.lexer.TokenType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,7 +38,7 @@ public class TokenManager {
         return null;
     }
 
-    public Token expectTokenType(PrebuiltTusanTokenType token){
+    public Token expectTokenType(TokenType token){
         Token nxt = nextToken();
         if (nxt.type == token){
             return nxt;
@@ -49,7 +48,7 @@ public class TokenManager {
         }
     }
 
-    public Token expectToken(PrebuiltTusanTokenType token, String name){
+    public Token expectToken(TokenType token, String name){
         Token nxt = nextToken();
         if (nxt.type == token && nxt.value.equals(name)){
             return nxt;
