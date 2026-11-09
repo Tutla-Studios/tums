@@ -26,4 +26,5 @@ This prints the expression to the console
 ```wait [expression]```
 
 - Expression must be a number
-- Waits [expression] seconds
+- Waits [expression] seconds, decimals too: `wait 0.5`
+- Only this script, or this run of an event, waits: the game and every other event keep running. While the scripts load, a wait holds up the scripts after it

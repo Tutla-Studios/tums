@@ -53,39 +53,69 @@ public class FunctionNode extends Node { // named this way to avoid any conflict
     }
 
     public FunctionNode create(){
-        Boolean paramChecks = false; // checking optional parameters
-        name = interpreter.currentToken.value;
-        interpreter.tokenManager.expectTokenType(PrebuiltTusanTokenType.LEFT_PAR);
-        while (interpreter.tokenManager.getNextToken().type == PrebuiltTusanTokenType.IDENTIFIER){
-            String parameterName = interpreter.tokenManager.nextToken().value;
-            FunctionParameter parameter = new FunctionParameter(parameterName);
-            if (interpreter.tokenManager.getNextToken().type == PrebuiltTusanTokenType.COLON){
-                interpreter.tokenManager.nextToken();
-                parameter.setType(Utils.getTypeFromName(interpreter.tokenManager.nextToken()));
-            } else {
-                parameter.setType(Types.ANY);
-            }
+        // function name(a, b: NUMBER, c = 1):
+        Token nameToken = interpreter.currentToken;
+        if (nameToken.type != PrebuiltTusanTokenType.IDENTIFIER){
+            interpreter.error("SyntaxError", "Expected the function's name after function, got " + describe(nameToken), null);
+        }
+        name = nameToken.value;
+        if (interpreter.tokenManager.getNextToken().type != PrebuiltTusanTokenType.LEFT_PAR){
+            interpreter.error("SyntaxError", "Expected ( after the function name " + name + ", got " + describe(interpreter.tokenManager.getNextToken()), null);
+        }
+        interpreter.tokenManager.nextToken();
 
-            if (interpreter.tokenManager.getNextToken().type == PrebuiltTusanTokenType.EQUAL){
-                paramChecks = true;
-                interpreter.tokenManager.nextToken();
-                interpreter.tokenManager.nextToken();
-                parameter.setFallback(new Expression(ctx).create().value);
-            } else {
-                if (!paramChecks){
+        boolean optionalSeen = false;
+        if (interpreter.tokenManager.getNextToken().type != PrebuiltTusanTokenType.RIGHT_PAR){
+            while (true){
+                Token parameterToken = interpreter.tokenManager.nextToken();
+                if (parameterToken.type != PrebuiltTusanTokenType.IDENTIFIER){
+                    interpreter.error("SyntaxError", "Expected a parameter name in " + name + "(), got " + describe(parameterToken), null);
+                }
+                String parameterName = parameterToken.value;
+                if (parameters.stream().anyMatch(p -> p.name.equals(parameterName))){
+                    interpreter.error("SyntaxError", name + "() has two parameters called " + parameterName, null);
+                }
+                FunctionParameter parameter = new FunctionParameter(parameterName);
+
+                if (interpreter.tokenManager.getNextToken().type == PrebuiltTusanTokenType.COLON){
+                    interpreter.tokenManager.nextToken();
+                    parameter.setType(Utils.getTypeFromName(interpreter.tokenManager.nextToken()));
+                } else {
+                    parameter.setType(Types.ANY);
+                }
+
+                if (interpreter.tokenManager.getNextToken().type == PrebuiltTusanTokenType.EQUAL){
+                    optionalSeen = true;
+                    interpreter.tokenManager.nextToken();
+                    interpreter.tokenManager.nextToken();
+                    parameter.setFallback(new Expression(ctx).create().value);
+                } else if (optionalSeen){
+                    interpreter.error("SyntaxError", "You cannot use required parameters after optional parameters", Arrays.asList("Move the optional parameters to the end of the function"));
+                } else {
                     parameter.setFallback(null);
                     parameter.setRequired(true);
+                }
+                parameters.add(parameter);
+
+                Token after = interpreter.tokenManager.getNextToken();
+                if (after.type == PrebuiltTusanTokenType.COMMA){
+                    interpreter.tokenManager.nextToken();
+                    if (interpreter.tokenManager.getNextToken().type == PrebuiltTusanTokenType.RIGHT_PAR){
+                        interpreter.error("SyntaxError", "Expected another parameter after the last , in " + name + "()", List.of("Remove the , before the )"));
+                    }
+                } else if (after.type == PrebuiltTusanTokenType.RIGHT_PAR){
+                    break;
                 } else {
-                    interpreter.error("SyntaxError", "You cannot use required parameters after optional parameters", Arrays.asList("Move the optional parameters to the end of the function"));
+                    interpreter.error("SyntaxError", "Expected , or ) after the parameter " + parameterName + " in " + name + "(), got " + describe(after),
+                            after.type == PrebuiltTusanTokenType.IDENTIFIER ? List.of("Separate parameters with a comma: " + parameterName + ", " + after.value) : null);
                 }
             }
-            if (interpreter.tokenManager.get(interpreter.pos+2).type == PrebuiltTusanTokenType.IDENTIFIER){
-                interpreter.tokenManager.expectTokenType(PrebuiltTusanTokenType.COMMA);
-            }
-            parameters.add(parameter);
         }
-        interpreter.tokenManager.expectTokenType(PrebuiltTusanTokenType.RIGHT_PAR);
-        interpreter.tokenManager.expectTokenType(PrebuiltTusanTokenType.COLON);
+        interpreter.tokenManager.nextToken(); // the )
+        if (interpreter.tokenManager.getNextToken().type != PrebuiltTusanTokenType.COLON){
+            interpreter.error("SyntaxError", "Expected : after the parameters of " + name + "(), got " + describe(interpreter.tokenManager.getNextToken()), List.of("function " + name + "(...):"));
+        }
+        interpreter.tokenManager.nextToken();
 
         List<Token> tokens = new ArrayList<>();
         int structures = 0;
@@ -131,5 +161,10 @@ public class FunctionNode extends Node { // named this way to avoid any conflict
         interpreter.data.funcs.put(name, new FunctionRegistry(parameters, functionInterpreter));
 
         return this;
+    }
+
+    private static String describe(Token token){
+        if (token == null || token.type == PrebuiltTusanTokenType.ENDSCRIPT) return "the end of the script";
+        return token.value.isEmpty() ? token.type.name() : token.value;
     }
 }

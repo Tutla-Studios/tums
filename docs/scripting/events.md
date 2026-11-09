@@ -64,5 +64,3 @@ This will print "You are low!" if the player's health is less than or equal to 2
     - `event_player` - You, the [player](/tums/scripting/types/player) (on Spigot/Paper, the player attacking)
     - `event_entity` - The [entity](/tums/scripting/types/entity) that was attacked
 - `server_start` - When the server has started: a dedicated server, or the one inside a singleplayer game. On Spigot/Paper, right after every script has been loaded.
-- `server_entity_load` - When an entity is loaded on the server: it spawns, its chunk loads, or a player joins.
-    - `event_entity` - The [entity](/tums/scripting/types/entity) that was loaded

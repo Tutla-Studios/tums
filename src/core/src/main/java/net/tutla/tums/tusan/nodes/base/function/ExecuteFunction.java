@@ -30,7 +30,8 @@ public class ExecuteFunction extends Node {
         interpreter.tokenManager.expectTokenType(PrebuiltTusanTokenType.LEFT_PAR);
 
         Interpreter functionInterpreter = originalFunction.interpreter.clone();
-        functionInterpreter.data = originalFunction.interpreter.data.child();
+        // the scope of this run of the script (the script itself, or an event's copy of it)
+        functionInterpreter.data = interpreter.data.root().child();
 
         List<FunctionParameter> required = new ArrayList<>();
         Map<String, FunctionParameter> optional = new LinkedHashMap<>();
@@ -44,7 +45,16 @@ public class ExecuteFunction extends Node {
                 if (interpreter.tokenManager.getNextToken().type != PrebuiltTusanTokenType.COMMA) missing(name, required, i);
                 interpreter.tokenManager.nextToken();
             }
-            if (interpreter.tokenManager.getNextToken().type == PrebuiltTusanTokenType.RIGHT_PAR || isNamed()) missing(name, required, i);
+            if (isNamed()){
+                String given = interpreter.tokenManager.get(interpreter.pos + 1).value;
+                boolean isRequired = required.stream().anyMatch(p -> p.name.equals(given));
+                if (isRequired){
+                    interpreter.error("TypeError", given + " is a required parameter of " + name + "(), pass it by position",
+                            List.of("Required parameters go first, in order, without their names"));
+                }
+                missing(name, required, i);
+            }
+            if (interpreter.tokenManager.getNextToken().type == PrebuiltTusanTokenType.RIGHT_PAR) missing(name, required, i);
             interpreter.tokenManager.nextToken();
             pass(functionInterpreter, parameter, new Expression(ctx).create().value, name);
         }

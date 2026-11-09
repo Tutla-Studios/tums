@@ -8,7 +8,8 @@ import net.tutla.tums.tusan.nodes.expression.Expression;
 /// ```wait [expression]```
 ///
 /// - Expression must be a number
-/// - Waits [expression] seconds
+/// - Waits [expression] seconds, decimals too: `wait 0.5`
+/// - Only this script, or this run of an event, waits: the game and every other event keep running. While the scripts load, a wait holds up the scripts after it
 public class Wait extends Node {
     public Wait(TusanContext ctx){
         super(ctx);
@@ -22,7 +23,8 @@ public class Wait extends Node {
                 interpreter.error("TypeError", "wait needs a number of seconds", null);
                 return this;
             }
-            Thread.sleep(seconds.intValue() * 1000L);
+            // scripts and event runs have threads of their own, so this pauses only this one
+            Thread.sleep(Math.round(seconds.doubleValue() * 1000));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

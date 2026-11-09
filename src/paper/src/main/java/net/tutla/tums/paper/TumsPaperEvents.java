@@ -9,10 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.world.EntitiesLoadEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.HashMap;
@@ -67,27 +64,5 @@ final class TumsPaperEvents implements Listener {
         variables.put("event_player", entity("event_player", player));
         variables.put("event_entity", entity("event_entity", event.getEntity()));
         fire("ATTACK", variables);
-    }
-
-    // an entity is loaded when it spawns, when its chunk loads, or when a player joins
-    private static void loaded(Entity entity) {
-        HashMap<String, Variable> variables = new HashMap<>();
-        variables.put("event_entity", entity("event_entity", entity));
-        fire("SERVER_ENTITY_LOAD", variables);
-    }
-
-    @EventHandler
-    public void onSpawn(EntitySpawnEvent event) {
-        loaded(event.getEntity());
-    }
-
-    @EventHandler
-    public void onChunkEntities(EntitiesLoadEvent event) {
-        event.getEntities().forEach(TumsPaperEvents::loaded);
-    }
-
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
-        loaded(event.getPlayer());
     }
 }

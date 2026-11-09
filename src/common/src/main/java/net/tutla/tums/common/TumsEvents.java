@@ -26,12 +26,6 @@ public final class TumsEvents {
         TumsAPI.executeEvent("SERVER_START", null, MinecraftEnvironment.SERVER);
     }
 
-    public static void entityLoaded(Entity entity) {
-        HashMap<String, Variable> variables = new HashMap<>();
-        variables.put("event_entity", new TumsEntity("event_entity", entity));
-        TumsAPI.executeEvent("SERVER_ENTITY_LOAD", variables, MinecraftEnvironment.SERVER);
-    }
-
     public static void attack(Player player, Entity target) {
         HashMap<String, Variable> variables = new HashMap<>();
         variables.put("event_player", new TumsPlayer("event_player", player));

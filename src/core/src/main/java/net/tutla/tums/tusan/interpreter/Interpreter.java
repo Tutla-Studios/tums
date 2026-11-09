@@ -3,6 +3,7 @@ package net.tutla.tums.tusan.interpreter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 import net.tutla.tums.tusan.MinecraftEnvironment;
@@ -256,10 +257,15 @@ public class Interpreter {
         // System.exit(0);
     }
 
-    /// Returns a new interpreter set up with the same data and tokens
+    /// Returns a new interpreter set up with the same data and its own copy of the tokens
     public Interpreter clone(){
         Interpreter intr = new Interpreter(tusan);
-        intr.setup(data, tokenManager, text, filePath, intr.getCompileEnvironment());
+        // tokens of its own: a token points back at its interpreter, and clones run at the same time
+        TokenManager tokens = new TokenManager(intr);
+        List<Token> copies = new ArrayList<>();
+        for (Token token : tokenManager.getAll()) copies.add(new Token(token.type, token.value, intr).setGroup(token.group));
+        tokens.setTokens(copies);
+        intr.setup(data, tokens, text, filePath, intr.getCompileEnvironment());
         return intr;
     }
 

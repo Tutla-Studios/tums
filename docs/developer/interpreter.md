@@ -66,7 +66,7 @@ public static void runScript(Path script, Tusan tusan, MinecraftEnvironment envi
 - `arrowsAtPosition()` - Returns the code around the current position, with arrows pointing at the current token. Used by `error`
 - `readFileContents(Path path)` - Reads a whole script file
 - `meetEnd()` - Marks the script as finished, so nothing after the current token runs
-- `clone()` - Returns a new interpreter set up with the same data and tokens
+- `clone()` - Returns a new interpreter set up with the same data and its own copy of the tokens
 - `setLanguage(TusanLanguageRules lang)` - Replaces the lexer rules this interpreter reads the script with
 - `getTusan()` - Returns the language this interpreter runs
 - `getCompileEnvironment()` - Returns the environment the script runs in

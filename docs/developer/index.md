@@ -50,5 +50,5 @@ Tusan in this case is the instance of a language in Tums.
 - `blank()` - Returns a new, empty language: no lexer rules and no nodes, not even the Tusan defaults
 - `getGlobalTusan()` - Returns the [global language](#what-is-global-tusan) that Tums and every addon share
 - `runAllScripts(Path scriptsDir, Tusan tusan, MinecraftEnvironment environment)` - Runs every script file in a folder
-- `runScript(Path script, Tusan tusan, MinecraftEnvironment environment)` - Compiles and runs a single script, then registers its data. See [Interpreter](/tums/developer/interpreter)
-- `executeEvent(String name, HashMap<String, Variable> variables, MinecraftEnvironment env)` - Fires an event, running every script listening to it with the given variables
+- `runScript(Path script, Tusan tusan, MinecraftEnvironment environment)` - Queues a script to compile and run on the Tums script thread, after the scripts queued before it, then registers its data. Returns straight away. See [Interpreter](/tums/developer/interpreter)
+- `executeEvent(String name, HashMap<String, Variable> variables, MinecraftEnvironment env)` - Fires an event: every handler listening to it runs on its own thread with the given variables, on its own copy of its script, so nothing it does reaches the script, the registry or any other run. Returns straight away

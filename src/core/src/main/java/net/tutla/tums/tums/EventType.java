@@ -76,7 +76,4 @@ public enum EventType {
     // server side
     /// When the server has started: a dedicated server, or the one inside a singleplayer game. On Spigot/Paper, right after every script has been loaded.
     SERVER_START,
-    /// When an entity is loaded on the server: it spawns, its chunk loads, or a player joins.
-    /// - `event_entity` - The [entity](https://wiki.tutla.net/tums/scripting/types/entity) that was loaded
-    SERVER_ENTITY_LOAD,
 }
