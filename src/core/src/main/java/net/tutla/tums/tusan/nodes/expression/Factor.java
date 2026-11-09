@@ -26,10 +26,11 @@ import java.util.*;
 ///   - Could be just a variable
 ///   - Could be a property
 ///   - Could be an item of a list/string, to access an item of a list/string you can `[ordinal number] item in [expression]` where ordinal number is 1st 2nd 3rd 4th 5th... and expression is a list/string
-///     - Example `3rd item in "javascript", "python", "kungfu"` returns `"kungfu"`
+///     - Example `3rd item in ["javascript", "python", "kungfu"]` returns `"kungfu"`
+///     - Example `2nd character in "hey"` returns `"e"`
 /// - A List
-///   - Any expression seperated by commas will be made into a list
-///   - For example: `"bats", "balls", "wickets"` makes a list
+///   - Expressions seperated by commas inside square brackets make a list
+///   - For example: `["bats", "balls", "wickets"]` makes a list
 /// - A function (effects/functions that return variables, you could make your own or read the [effects list](https://wiki.tutla.net/tums/scripting/basic/effects)
 public class Factor extends Node {
     public Object value;
@@ -42,7 +43,12 @@ public class Factor extends Node {
         value = token.value;
         if (token.type == PrebuiltTusanTokenType.OPERATOR && "-".equals(token.value)) {
             interpreter.tokenManager.nextToken();
-            value = -((Double) new Factor(ctx).create().value);
+            Object operand = new Factor(ctx).create().value;
+            if (!(operand instanceof Number)){
+                interpreter.error("TypeError", "Expected a number after '-'", null);
+                return this;
+            }
+            value = -((Number) operand).doubleValue();
             return this;
         } else if (token.type == PrebuiltTusanTokenType.NUMBER){
             this.value = Double.parseDouble(token.value);
@@ -60,7 +66,7 @@ public class Factor extends Node {
                 value = (Double) value*timeUnits.get(interpreter.tokenManager.nextToken().value);
             }
         } else if (token.type == PrebuiltTusanTokenType.STRING){
-            value = token.value;
+            value = Utils.unquote(token.value); // the token keeps its quotes, the value does not
         } else if (token.type == PrebuiltTusanTokenType.BOOL){
             value = Objects.equals(token.value, "true");
         } else if (token.type == PrebuiltTusanTokenType.NOTHING) {
@@ -85,17 +91,19 @@ public class Factor extends Node {
                 interpreter.tokenManager.expectToken(PrebuiltTusanTokenType.LOGIC, "in");
                 interpreter.tokenManager.nextToken();
                 Object list = new Factor(ctx).create().value;
-                if (list instanceof List) {
-                    if (((List<Object>) list).size() <= n){
-                        interpreter.error("OutOfBoundsException", "Tried to index over array's items", null);
-                    }
-                    value = ((List<Object>) list).get(n);
-                } else if (list instanceof Map) {
-                    int i = 0;
-                    for (Object v : ((Map<?, ?>) list).values()) {
-                        if (i == n) value = v;
-                        i++;
-                    }
+                int size = list instanceof List<?> l ? l.size() : list instanceof Map<?, ?> m ? m.size() : list instanceof String s ? s.length() : -1;
+                if (size < 0){
+                    interpreter.error("TypeError", "You can only take an item of a list, a TSON or a string", null);
+                    value = null;
+                } else if (n < 0 || n >= size){
+                    interpreter.error("OutOfBoundsException", "There is no " + token.value + " item, it only has " + size, null);
+                    value = null;
+                } else if (list instanceof List<?> l) {
+                    value = l.get(n);
+                } else if (list instanceof Map<?, ?> m) {
+                    value = new ArrayList<>(m.values()).get(n);
+                } else {
+                    value = String.valueOf(((String) list).charAt(n));
                 }
             } else if (interpreter.data.vars.containsKey(token.value)){
                 value = new Name(ctx).create().value;
@@ -113,7 +121,7 @@ public class Factor extends Node {
             while (interpreter.tokenManager.getNextToken().type != PrebuiltTusanTokenType.RIGHT_CURLY){
                 Token e = interpreter.tokenManager.nextToken();
                 if (e.type == PrebuiltTusanTokenType.STRING || e.type == PrebuiltTusanTokenType.IDENTIFIER){
-                    String key = e.value;
+                    String key = e.type == PrebuiltTusanTokenType.STRING ? Utils.unquote(e.value) : e.value;
                     interpreter.tokenManager.expectTokenType(PrebuiltTusanTokenType.COLON);
                     interpreter.tokenManager.nextToken();
                     Object val = new Expression(ctx).create().value;

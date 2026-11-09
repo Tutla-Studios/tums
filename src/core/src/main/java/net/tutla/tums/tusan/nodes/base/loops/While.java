@@ -50,13 +50,23 @@ public class While extends Node {
         interpreter.pos = currentPos;
         check();
 
-        while (cond){
-            Token nxt = interpreter.tokenManager.nextToken();
-            if (nxt.type== PrebuiltTusanTokenType.ENDSTRUCTURE){
-                check();
-            } else {
-                new Statement(ctx).create();
+        interpreter.loopDepth++;
+        try {
+            while (cond && !interpreter.end && !interpreter.caughtError){
+                interpreter.tokenManager.nextToken();
+                if (interpreter.pos >= endPos){
+                    check(); // this while's own end: nested structures consume theirs in Statement
+                } else {
+                    new Statement(ctx).create();
+                    if (interpreter.breaking){
+                        interpreter.breaking = false; // break stops this loop only
+                        break;
+                    }
+                    // a return (interpreter.end) or an error leaves the while condition alone: stop here
+                }
             }
+        } finally {
+            interpreter.loopDepth--;
         }
         interpreter.pos = endPos;
         interpreter.currentToken = interpreter.tokenManager.get(endPos);

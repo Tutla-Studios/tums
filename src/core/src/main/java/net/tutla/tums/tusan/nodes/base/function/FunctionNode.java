@@ -7,6 +7,7 @@ import net.tutla.tums.tusan.Utils;
 import net.tutla.tums.tusan.interpreter.Interpreter;
 import net.tutla.tums.tusan.interpreter.TokenManager;
 import net.tutla.tums.tusan.lexer.Token;
+import net.tutla.tums.tusan.lexer.util.prebuilt.PrebuiltTusanTokenGroup;
 import net.tutla.tums.tusan.lexer.util.prebuilt.PrebuiltTusanTokenType;
 import net.tutla.tums.tusan.nodes.expression.Expression;
 
@@ -107,7 +108,8 @@ public class FunctionNode extends Node { // named this way to avoid any conflict
                 }
 
 
-                if (nextToken.type == PrebuiltTusanTokenType.STRUCTURE){
+                // if/while/loop/function have their own token types, only their group says STRUCTURE
+                if (nextToken.group == PrebuiltTusanTokenGroup.STRUCTURE){
                     structures++;
                     tokens.add(nextToken);
                 } else if (nextToken.type == PrebuiltTusanTokenType.ENDSTRUCTURE){

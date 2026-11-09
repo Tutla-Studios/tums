@@ -47,7 +47,7 @@ Tusan in this case is the instance of a language in Tums.
 - `getRegister()` - Returns the registry holding the data (variables, functions, events) of every script that has run
 - `addEvent(String name)` - Registers an event name that scripts can listen to with `on <name>`
 - `getEventMappings()` - Returns every registered event name
-- `blank()` - Returns a new language with the Tusan defaults, separate from the global one
+- `blank()` - Returns a new, empty language: no lexer rules and no nodes, not even the Tusan defaults
 - `getGlobalTusan()` - Returns the [global language](#what-is-global-tusan) that Tums and every addon share
 - `runAllScripts(Path scriptsDir, Tusan tusan, MinecraftEnvironment environment)` - Runs every script file in a folder
 - `runScript(Path script, Tusan tusan, MinecraftEnvironment environment)` - Compiles and runs a single script, then registers its data. See [Interpreter](/tums/developer/interpreter)

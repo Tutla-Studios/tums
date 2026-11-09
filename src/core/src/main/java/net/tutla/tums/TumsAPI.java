@@ -69,9 +69,9 @@ public class TumsAPI {
         return eventMappings;
     }
 
-    /// Returns a new language with the Tusan defaults, separate from the global one
+    /// Returns a new, empty language: no lexer rules and no nodes, not even the Tusan defaults
     public static Tusan blank(){
-        return Tusan.tusan();
+        return new Tusan();
     }
 
     /// Returns the [global language](#what-is-global-tusan) that Tums and every addon share
@@ -106,6 +106,7 @@ public class TumsAPI {
     /// Fires an event, running every script listening to it with the given variables
     public static void executeEvent(String name, HashMap<String, Variable> variables, MinecraftEnvironment env){
         List<Interpreter> callback = Tums.getRegister().registry.events.get(name.toUpperCase());
+        if (callback == null) return; // not an event any script can listen to
         if (variables == null){
             variables = new HashMap<>();
         }
@@ -114,7 +115,7 @@ public class TumsAPI {
             exec.setCompileEnvironment(env);
             exec.tokenManager.changeTokensParent(exec);
             exec.data.vars.putAll(variables);
-            executor.compile();
+            exec.compile(); // the clone, which is the one set up for this event
         }
     }
 }

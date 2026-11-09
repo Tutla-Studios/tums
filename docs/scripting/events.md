@@ -48,17 +48,21 @@ This will print "You are low!" if the player's health is less than or equal to 2
 
 ### Event Types
 
-- `key_press` - When a key is pressed. *Not fired by any loader yet.*
-- `left_click` - On every left click. Including menus, holding down the button, etc. *Fabric only for now.*
-- `left_release` - When left mouse button is released. Including menus and anywhere else within the window. *Fabric only for now.*
-- `right_click` - On every right click. Including menus, holding down the button, etc. *Not fired by any loader yet.*
-- `right_release` - When right mouse button is released. Including menus and anywhere else within the window. *Not fired by any loader yet.*
-- `middle_click` - On every middle click. *Not fired by any loader yet.*
-- `middle_release` - When the middle mouse button is released. *Not fired by any loader yet.*
-- `scroll_up` - When scrolling up. *Not fired by any loader yet.*
-- `scroll_down` - When scrolling down. *Not fired by any loader yet.*
-- `attack` - When attacked. Includes both players and mobs. *Fabric only for now.*
-    - `event_player` - You, the [player](/tums/scripting/types/player)
+- `key_press` - When a key is pressed, in menus too. Held-down repeats don't count. *Fabric and NeoForge.*
+    - `event_key` - The key, like `a`, `space` or `left.shift`
+- `left_click` - On every left click. Including menus, holding down the button, etc. On Spigot/Paper: when a player left clicks the air or a block.
+    - `event_player` - *Spigot/Paper only:* the [player](/tums/scripting/types/player) who clicked
+- `left_release` - When left mouse button is released. Including menus and anywhere else within the window. *Fabric and NeoForge.*
+- `right_click` - On every right click. Including menus, holding down the button, etc. On Spigot/Paper: when a player right clicks the air or a block.
+    - `event_player` - *Spigot/Paper only:* the [player](/tums/scripting/types/player) who clicked
+- `right_release` - When right mouse button is released. Including menus and anywhere else within the window. *Fabric and NeoForge.*
+- `middle_click` - On every middle click. *Fabric and NeoForge.*
+- `middle_release` - When the middle mouse button is released. *Fabric and NeoForge.*
+- `scroll_up` - When scrolling up. *Fabric and NeoForge.*
+- `scroll_down` - When scrolling down. *Fabric and NeoForge.*
+- `attack` - When you attack. Includes both players and mobs. On Spigot/Paper: when any player attacks.
+    - `event_player` - You, the [player](/tums/scripting/types/player) (on Spigot/Paper, the player attacking)
     - `event_entity` - The [entity](/tums/scripting/types/entity) that was attacked
-- `server_start` - When the server has started, right after every script has been loaded. *Spigot/Paper only for now.*
-- `server_entity_load` - When an entity is loaded on the server. *Not fired by any loader yet.*
+- `server_start` - When the server has started: a dedicated server, or the one inside a singleplayer game. On Spigot/Paper, right after every script has been loaded.
+- `server_entity_load` - When an entity is loaded on the server: it spawns, its chunk loads, or a player joins.
+    - `event_entity` - The [entity](/tums/scripting/types/entity) that was loaded

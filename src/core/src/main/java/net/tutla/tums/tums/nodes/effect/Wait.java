@@ -17,8 +17,12 @@ public class Wait extends Node {
     public Wait create() {
         try {
             // the statement loop has already moved past "wait", so the current token starts the expression
-            Double time = (Double) new Expression(ctx).create().value;
-            Thread.sleep(time.intValue()* 1000L);
+            Object time = new Expression(ctx).create().value;
+            if (!(time instanceof Number seconds)) {
+                interpreter.error("TypeError", "wait needs a number of seconds", null);
+                return this;
+            }
+            Thread.sleep(seconds.intValue() * 1000L);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

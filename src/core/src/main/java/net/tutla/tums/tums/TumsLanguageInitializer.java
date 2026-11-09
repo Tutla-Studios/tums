@@ -19,10 +19,6 @@ public class TumsLanguageInitializer {
 
         TumsAPI.getGlobalTusan().linkNodeToStatement(PrebuiltTusanTokenType.ON, On.class);
         TumsAPI.getGlobalTusan().linkNodeToStatement(TumsTokenType.WAIT, Wait.class);
-
-
-        TumsAPI.getGlobalTusan().registerLexerRule(new LexerRule(TumsTokenType.HELLO, WordedPattern.makeOneWordPattern("hello")));
-        TumsAPI.getGlobalTusan().registerNode(HelloNode.class);
     }
 }
 

@@ -46,33 +46,37 @@ package net.tutla.tums.tums;
 /// @tums.summary How to react to events in tums
 public enum EventType {
     // client side
-    /// When a key is pressed. *Not fired by any loader yet.*
+    /// When a key is pressed, in menus too. Held-down repeats don't count. *Fabric and NeoForge.*
+    /// - `event_key` - The key, like `a`, `space` or `left.shift`
     KEY_PRESS,
-    /// On every left click. Including menus, holding down the button, etc. *Fabric only for now.*
+    /// On every left click. Including menus, holding down the button, etc. On Spigot/Paper: when a player left clicks the air or a block.
+    /// - `event_player` - *Spigot/Paper only:* the [player](https://wiki.tutla.net/tums/scripting/types/player) who clicked
     LEFT_CLICK,
-    /// When left mouse button is released. Including menus and anywhere else within the window. *Fabric only for now.*
+    /// When left mouse button is released. Including menus and anywhere else within the window. *Fabric and NeoForge.*
     LEFT_RELEASE,
-    /// On every right click. Including menus, holding down the button, etc. *Not fired by any loader yet.*
+    /// On every right click. Including menus, holding down the button, etc. On Spigot/Paper: when a player right clicks the air or a block.
+    /// - `event_player` - *Spigot/Paper only:* the [player](https://wiki.tutla.net/tums/scripting/types/player) who clicked
     RIGHT_CLICK,
-    /// When right mouse button is released. Including menus and anywhere else within the window. *Not fired by any loader yet.*
+    /// When right mouse button is released. Including menus and anywhere else within the window. *Fabric and NeoForge.*
     RIGHT_RELEASE,
-    /// On every middle click. *Not fired by any loader yet.*
+    /// On every middle click. *Fabric and NeoForge.*
     MIDDLE_CLICK,
-    /// When the middle mouse button is released. *Not fired by any loader yet.*
+    /// When the middle mouse button is released. *Fabric and NeoForge.*
     MIDDLE_RELEASE,
-    /// When scrolling up. *Not fired by any loader yet.*
+    /// When scrolling up. *Fabric and NeoForge.*
     SCROLL_UP,
-    /// When scrolling down. *Not fired by any loader yet.*
+    /// When scrolling down. *Fabric and NeoForge.*
     SCROLL_DOWN,
 
-    /// When attacked. Includes both players and mobs. *Fabric only for now.*
-    /// - `event_player` - You, the [player](https://wiki.tutla.net/tums/scripting/types/player)
+    /// When you attack. Includes both players and mobs. On Spigot/Paper: when any player attacks.
+    /// - `event_player` - You, the [player](https://wiki.tutla.net/tums/scripting/types/player) (on Spigot/Paper, the player attacking)
     /// - `event_entity` - The [entity](https://wiki.tutla.net/tums/scripting/types/entity) that was attacked
     ATTACK,
 
     // server side
-    /// When the server has started, right after every script has been loaded. *Spigot/Paper only for now.*
+    /// When the server has started: a dedicated server, or the one inside a singleplayer game. On Spigot/Paper, right after every script has been loaded.
     SERVER_START,
-    /// When an entity is loaded on the server. *Not fired by any loader yet.*
-    SERVER_ENTITY_LOAD, // TODO: event_entity returns entity's name
+    /// When an entity is loaded on the server: it spawns, its chunk loads, or a player joins.
+    /// - `event_entity` - The [entity](https://wiki.tutla.net/tums/scripting/types/entity) that was loaded
+    SERVER_ENTITY_LOAD,
 }

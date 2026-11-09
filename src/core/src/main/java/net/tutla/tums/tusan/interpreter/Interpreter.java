@@ -11,8 +11,6 @@ import net.tutla.tums.tusan.TusanContext;
 import net.tutla.tums.tusan.Utils;
 import net.tutla.tums.tusan.lexer.*;
 import net.tutla.tums.tusan.lexer.util.prebuilt.PrebuiltTusanTokenType;
-import net.tutla.tums.tums.HelloNode;
-import net.tutla.tums.tums.TumsTokenType;
 
 /// The interpreter is by far the most important part in Tums. It is the instance that parses your script.
 ///
@@ -102,6 +100,10 @@ public class Interpreter {
     public int pos = 0;
     /// The current token
     public Token currentToken;
+    /// How many loops the current statement is inside. `break` is only allowed when this is above 0
+    public int loopDepth = 0;
+    /// Set by `break` until the innermost loop sees it and stops
+    public boolean breaking = false;
 
     private MinecraftEnvironment compileEnvironment = MinecraftEnvironment.SERVER;
 

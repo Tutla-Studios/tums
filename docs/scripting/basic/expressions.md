@@ -29,10 +29,11 @@ This is the atom of TuSK. A Factor takes in a `NUMBER`, `STRING`, `BOOL`, `TYPE`
   - Could be just a variable
   - Could be a property
   - Could be an item of a list/string, to access an item of a list/string you can `[ordinal number] item in [expression]` where ordinal number is 1st 2nd 3rd 4th 5th... and expression is a list/string
-    - Example `3rd item in "javascript", "python", "kungfu"` returns `"kungfu"`
+    - Example `3rd item in ["javascript", "python", "kungfu"]` returns `"kungfu"`
+    - Example `2nd character in "hey"` returns `"e"`
 - A List
-  - Any expression seperated by commas will be made into a list
-  - For example: `"bats", "balls", "wickets"` makes a list
+  - Expressions seperated by commas inside square brackets make a list
+  - For example: `["bats", "balls", "wickets"]` makes a list
 - A function (effects/functions that return variables, you could make your own or read the [effects list](/tums/scripting/basic/effects)
 
 ## Term

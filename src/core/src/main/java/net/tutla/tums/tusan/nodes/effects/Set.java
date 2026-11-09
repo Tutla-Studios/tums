@@ -8,7 +8,9 @@ import net.tutla.tums.tusan.lexer.Token;
 import net.tutla.tums.tusan.lexer.util.prebuilt.PrebuiltTusanTokenType;
 import net.tutla.tums.tusan.nodes.base.Name;
 import net.tutla.tums.tusan.nodes.expression.Expression;
+import net.tutla.tums.tusan.nodes.expression.Factor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,49 +27,54 @@ public class Set extends Node {
     }
 
     public Set create(){
-        Token name = interpreter.tokenManager.nextToken();
+        // the statement loop has already moved past "set": the current token is the name (or an ordinal)
+        Token name = ctx.getCurrentToken();
         Object num = utils.isOrdinal(name);
-        if (num != null){ // TODO: this code is fucked so like ill fix it later
-            int n = ((Double) num).intValue();
-            n--;
-            interpreter.tokenManager.expectTokenClassic("KEYWORD:item|KEYWORD:character");
-            interpreter.tokenManager.expectToken(PrebuiltTusanTokenType.LOGIC,"in");
-            Object val;
-            if (interpreter.tokenManager.getNextToken().type == PrebuiltTusanTokenType.IDENTIFIER){
-                interpreter.tokenManager.nextToken();
-                Name e = new Name(ctx).create();
-                val = Name.name;
-            } else {
-                interpreter.tokenManager.nextToken();
-                Object e = new Expression(ctx);
-                val = e;
-            }
-            interpreter.tokenManager.expectToken(PrebuiltTusanTokenType.KEYWORD,"to");
-
-            interpreter.tokenManager.nextToken();
-            Object exprValue = new Expression(ctx).create().value;
-
-            if (val instanceof List) {
-                ((List<Object>) val).set(n, exprValue);
-            } else if (val instanceof Map) {
-                ((Map<Object, Object>) val).put(n, exprValue);
-            }
+        if (num != null){
+            setItem(((Double) num).intValue() - 1, name.value);
         } else {
             Name n = new Name(ctx).create();
+            if (interpreter.caughtError) return this;
+            // read these now: Name.name is static, so evaluating the value below (which may read other
+            // variables) would change it before it is used
+            String target = Name.name;
+            Map<String, Variable> location = n.location;
+
             interpreter.tokenManager.expectToken(PrebuiltTusanTokenType.KEYWORD,"to");
             interpreter.tokenManager.nextToken();
             Object val = new Expression(ctx).create().value;
-            if (val instanceof Variable){
-                ((Variable) val).name = n.name;
-                n.location.put(n.name, new Variable(n.name, val, null));
-                interpreter.data.vars.put("it",new Variable("it", val, null));
-                interpreter.data.vars.put("this", new Variable("this", val, null));
-            } else {
-                n.location.put(n.name, new Variable(n.name, val, null));
-                interpreter.data.vars.put("it",new Variable("it", val, null));
-                interpreter.data.vars.put("this", new Variable("this", val, null));
-            }
+
+            // a value that already is a Variable (a player, an entity) is stored as itself, so its
+            // properties stay reachable through the new name
+            Variable stored = val instanceof Variable v ? v : new Variable(target, val, null);
+            location.put(target, stored);
+            interpreter.data.vars.put("it", new Variable("it", val, null));
+            interpreter.data.vars.put("this", new Variable("this", val, null));
         }
         return this;
+    }
+
+    // set 2nd item in mylist to "x"
+    private void setItem(int n, String ordinal){
+        interpreter.tokenManager.expectTokenClassic("KEYWORD:item|KEYWORD:character");
+        interpreter.tokenManager.expectToken(PrebuiltTusanTokenType.LOGIC, "in");
+        interpreter.tokenManager.nextToken();
+        Object container = new Factor(ctx).create().value;
+        interpreter.tokenManager.expectToken(PrebuiltTusanTokenType.KEYWORD, "to");
+        interpreter.tokenManager.nextToken();
+        Object exprValue = new Expression(ctx).create().value;
+
+        int size = container instanceof List<?> l ? l.size() : container instanceof Map<?, ?> m ? m.size() : -1;
+        if (size < 0){
+            interpreter.error("TypeError", "You can only change an item of a list or a TSON", container instanceof String ? List.of("Strings cannot be changed, build a new one instead") : null);
+        } else if (n < 0 || n >= size){
+            interpreter.error("OutOfBoundsException", "There is no " + ordinal + " item, it only has " + size, null);
+        } else if (container instanceof List) {
+            ((List<Object>) container).set(n, exprValue);
+        } else {
+            Map<Object, Object> map = (Map<Object, Object>) container;
+            Object key = new ArrayList<>(map.keySet()).get(n);
+            map.put(key, exprValue);
+        }
     }
 }

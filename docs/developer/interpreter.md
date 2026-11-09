@@ -85,3 +85,5 @@ public static void runScript(Path script, Tusan tusan, MinecraftEnvironment envi
 - `Boolean caughtError` - Whether an error has been reported
 - `int pos` - The position of the current token
 - `Token currentToken` - The current token
+- `int loopDepth` - How many loops the current statement is inside. `break` is only allowed when this is above 0
+- `boolean breaking` - Set by `break` until the innermost loop sees it and stops

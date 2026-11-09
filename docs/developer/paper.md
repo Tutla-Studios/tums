@@ -51,7 +51,7 @@ Scripts on Spigot/Paper always run in the `SERVER` environment.
 ## Methods
 
 - `onLoad()` - Called by the server when Tums loads, before any plugin is enabled. Sets up Tums in `plugins/Tums/`
-- `onEnable()` - Called by the server when Tums is enabled. Runs the scripts on the first server tick, then fires `SERVER_START`
+- `onEnable()` - Called by the server when Tums is enabled. Runs the scripts on the first server tick, then fires `SERVER_START`, and starts listening for the other events
 - `onDisable()` - Called by the server when Tums is disabled
 - `getInstance()` - Returns the running Tums plugin, or `null` while it is disabled
 - `getTusan()` - Returns the global language, the same one as `TumsAPI.getGlobalTusan()`. Register lexer rules and nodes on this

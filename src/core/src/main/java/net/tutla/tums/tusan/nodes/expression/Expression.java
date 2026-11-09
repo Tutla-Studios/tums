@@ -69,14 +69,14 @@ public class Expression extends Node {
                 if (Objects.equals(op.value, "+")){
                     if (term1.value instanceof String && term2.value instanceof String){
                         value = (String) term1.value + (String) term2.value;
-                    } else if (term1.value instanceof Number && term2.value instanceof Number){
-                        value = (Double) term1.value + (Double) term2.value;
+                    } else if (term1.value instanceof Number a && term2.value instanceof Number b){
+                        value = a.doubleValue() + b.doubleValue();
                     } else {
                         interpreter.error("TypeError","Invalid types provided to add", List.of("You can only add string+string and number+number"));
                     }
                 } else if (Objects.equals(op.value, "-")) {
-                    if (term1.value instanceof Number && term2.value instanceof Number){
-                        value = (Double) term1.value - (Double) term2.value;
+                    if (term1.value instanceof Number a && term2.value instanceof Number b){
+                        value = a.doubleValue() - b.doubleValue();
                     } else {
                         interpreter.error("TypeError","Invalid types provided to subtract", null);
                     }
@@ -130,13 +130,21 @@ public class Expression extends Node {
         return this;
     }
 
+    // 0 (an Integer loop counter) and 0.0 (a number written in a script) are the same number
+    private static boolean same(Object a, Object b) {
+        if (a instanceof Number x && b instanceof Number y) return x.doubleValue() == y.doubleValue();
+        return Objects.equals(a, b);
+    }
+
     private Object compare(Token op, Term term1, Expression term2) {
         switch (op.value) {
-            case "==", "is" -> value = Objects.equals(term1.value, term2.value);
-            case "!="       -> value = !Objects.equals(term1.value, term2.value);
+            case "==", "is" -> value = same(term1.value, term2.value);
+            case "!="       -> value = !same(term1.value, term2.value);
             default -> {
-                if (!(term1.value instanceof Number) || !(term2.value instanceof Number))
+                if (!(term1.value instanceof Number) || !(term2.value instanceof Number)) {
                     interpreter.error("TypeError", "Expected numbers for comparison " + op.value, null);
+                    return value = null;
+                }
                 double a = ((Number) term1.value).doubleValue();
                 double b = ((Number) term2.value).doubleValue();
                 switch (op.value) {

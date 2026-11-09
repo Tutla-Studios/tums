@@ -67,6 +67,30 @@ public class Utils {
         return interpreter.data.vars.containsKey(value) || interpreter.data.funcs.containsKey(value);
     }
 
+    /// The text of a string literal: the token as the lexer read it, with its quotes taken off and its
+    /// escapes (`\"`, `\'`, `\\`, `\n`, `\t`) turned into the characters they stand for
+    public static String unquote(String literal) {
+        if (literal == null || literal.length() < 2) return literal;
+        char q = literal.charAt(0);
+        if ((q != '"' && q != '\'') || literal.charAt(literal.length() - 1) != q) return literal;
+        String body = literal.substring(1, literal.length() - 1);
+        StringBuilder out = new StringBuilder(body.length());
+        for (int i = 0; i < body.length(); i++) {
+            char c = body.charAt(i);
+            if (c == '\\' && i + 1 < body.length()) {
+                char e = body.charAt(++i);
+                switch (e) {
+                    case 'n' -> out.append('\n');
+                    case 't' -> out.append('\t');
+                    default -> out.append(e); // \" \' \\ and anything else stand for themselves
+                }
+            } else {
+                out.append(c);
+            }
+        }
+        return out.toString();
+    }
+
     public static List<Integer> range(int stop) {
         List<Integer> list = new ArrayList<>();
         for (int i = 0; i < stop; i += 1) {

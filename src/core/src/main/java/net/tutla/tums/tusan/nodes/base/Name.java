@@ -26,7 +26,11 @@ public class Name extends Node {
     public Name create() { // fuck ass logic made me take 1 hour to understand
         name = token.value;
         if (interpreter.tokenManager.getNextToken().type == PrebuiltTusanTokenType.PROPERTY) {
-            location = ((Variable) location.get(name)).properties;
+            if (!(location.get(name) instanceof Variable holder)) {
+                interpreter.error("UndefinedVariable", name + " was not defined, so it has no properties", null);
+                return this;
+            }
+            location = holder.properties;
             while (interpreter.tokenManager.getNextToken().type == PrebuiltTusanTokenType.PROPERTY) {
                 interpreter.tokenManager.nextToken();
                 name = interpreter.tokenManager.nextToken().value;

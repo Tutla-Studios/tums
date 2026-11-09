@@ -47,6 +47,8 @@ public class If extends Node {
         boolean runElse = false;
 
         while (!end){
+            // after a return or a break inside a branch, the rest of this if is only skipped over
+            boolean stopped = interpreter.end || interpreter.breaking;
             Token nxt = interpreter.tokenManager.getNextToken();
             if (nxt.type== PrebuiltTusanTokenType.ENDSTRUCTURE){
                 if (structures == 0){
@@ -59,7 +61,7 @@ public class If extends Node {
                 }
             } else if ((nxt.type == PrebuiltTusanTokenType.KEYWORD && nxt.value.equals("elseif")) && structures == 0) {
                 interpreter.tokenManager.nextToken();
-                if (!runIf){
+                if (!runIf && !stopped){
                     interpreter.tokenManager.nextToken();
                     condition = new Expression(ctx).create();
                     if ((boolean) condition.value){
@@ -88,7 +90,7 @@ public class If extends Node {
             } else {
                 Token e = interpreter.tokenManager.nextToken();
 
-                if (runIf || runElse){
+                if ((runIf || runElse) && !stopped){
                     new Statement(ctx).create();
                 } else {
                     // if/while/loop/function have their own token types, only their group says STRUCTURE

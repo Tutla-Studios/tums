@@ -1,9 +1,11 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "net.tutla.tums.mixin.client",
+  "package": "net.tutla.tums.client.mixins",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "MouseHandlerMixin",
+    "KeyboardHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

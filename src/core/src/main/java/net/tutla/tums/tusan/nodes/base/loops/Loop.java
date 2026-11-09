@@ -9,7 +9,10 @@ import net.tutla.tums.tusan.lexer.util.prebuilt.PrebuiltTusanTokenType;
 import net.tutla.tums.tusan.nodes.base.Statement;
 import net.tutla.tums.tusan.nodes.expression.Expression;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /// Loops are things that go around and come around, similarly a loop here will be repition.
 ///
@@ -34,9 +37,8 @@ import java.util.Arrays;
 /// @tums.summary How to use loops in tums
 public class Loop extends Node {
     private Integer pos;
+    private int bodyEnd;
     private int iterations = 0;
-    private Boolean end = false;
-    private Boolean run = true;
 
     public String as;
     public Object times;
@@ -46,10 +48,7 @@ public class Loop extends Node {
     }
 
     public Loop create(){
-        if (token.type == PrebuiltTusanTokenType.NUMBER){
-            times = ((Double) new Expression(ctx).create().value).intValue();
-            interpreter.tokenManager.expectToken(PrebuiltTusanTokenType.KEYWORD, "times");
-        } else if (token.type == PrebuiltTusanTokenType.KEYWORD && token.value.equals("all")) {
+        if (token.type == PrebuiltTusanTokenType.KEYWORD && token.value.equals("all")) {
             String target = interpreter.tokenManager.expectTokenClassic("KEYWORD:items|KEYWORD:characters").value;
             interpreter.tokenManager.expectToken(PrebuiltTusanTokenType.LOGIC, "in");
             if (target.equals("characters") || target.equals("items")){
@@ -57,54 +56,68 @@ public class Loop extends Node {
                 times = new Expression(ctx).create().value;
             }
         } else {
-            interpreter.error("TusanError", "Tusan does not support this iterable", Arrays.asList("This is caused due to the Tusan API limitations on the parent language. To fix it use the main branch (Python) or reimplement it."));
+            // loop <expression> times: a number, a variable, a sum...
+            Object count = new Expression(ctx).create().value;
+            if (interpreter.caughtError) return this;
+            if (!(count instanceof Number n)){
+                interpreter.error("TypeError", "loop ... times needs a number", null);
+                return this;
+            }
+            times = n.intValue();
+            interpreter.tokenManager.expectToken(PrebuiltTusanTokenType.KEYWORD, "times");
         }
+        if (interpreter.caughtError) return this;
         parseAs();
         loop();
         return this;
     }
 
     public void loop(){
-        pos = interpreter.pos;
-        Boolean run = true;
+        pos = interpreter.pos;          // the last token of the header: the body starts after it
+        bodyEnd = findBodyEnd();        // this loop's own "end"
 
-        if (times instanceof Integer){
-            for (int i = 0; i < ((int) times); i++) { // "loop 3 times" runs for 0, 1 and 2
-                loopExecute(new Variable(as, i, null));
-            }
+        List<Object> values = new ArrayList<>();
+        if (times instanceof Integer count){
+            for (int i = 0; i < count; i++) values.add((double) i); // a Double, like every other number
+        } else if (times instanceof Iterable<?> items) {
+            for (Object i : items) values.add(i);
+        } else if (times instanceof Object[] items) {
+            values.addAll(Arrays.asList(items));
+        } else if (times instanceof Map<?, ?> map) {
+            values.addAll(map.values());
+        } else if (times instanceof String text){
+            for (int i = 0; i < text.length(); i++) values.add(String.valueOf(text.charAt(i)));
         } else {
-            if (times instanceof Iterable) {
-                for (Object i : (Iterable<?>) times) {
-                    loopExecute(new Variable(as, i, null));
+            interpreter.error("TusanError", "Tusan does not support this iterable", null);
+        }
+
+        interpreter.loopDepth++;
+        try {
+            for (Object value : values) {
+                loopExecute(new Variable(as, value, null));
+                if (interpreter.breaking){
+                    interpreter.breaking = false; // break stops this loop only
+                    break;
                 }
-            } else if (times instanceof Object[]) {
-                for (Object i : (Object[]) times) {
-                    loopExecute(new Variable(as, i, null));
-                }
-            } else if (times instanceof String){
-                for (int i = 0; i < ((String) times).length(); i++) {
-                    String c = String.valueOf(((String) times).charAt(i));
-                    loopExecute(new Variable(as, c, null));
-                }
-            }else {
-                interpreter.error("TusanError", "Tusan does not support this iterable", null);
+                if (interpreter.end || interpreter.caughtError) break;
             }
+        } finally {
+            interpreter.loopDepth--;
         }
-        if (iterations == 0){
-            skipBody();
-        }
+        // however the body finished (all of it, break, return, or not at all) carry on after its end
+        interpreter.pos = bodyEnd;
+        interpreter.currentToken = interpreter.tokenManager.get(bodyEnd);
     }
 
-    // With nothing to loop over the body never ran, so nothing has moved past it yet: step over it to its
-    // end, so it does not run once as ordinary code after the loop
-    private void skipBody(){
+    // The position of the end that closes this loop, counting nested structures on the way
+    private int findBodyEnd(){
         interpreter.pos = pos;
         int structures = 0;
         while (true){
             Token nxt = interpreter.tokenManager.nextToken();
-            if (nxt == null) return;
+            if (nxt == null || nxt.type == PrebuiltTusanTokenType.ENDSCRIPT) return interpreter.pos;
             if (nxt.type == PrebuiltTusanTokenType.ENDSTRUCTURE){
-                if (structures == 0) return;
+                if (structures == 0) return interpreter.pos;
                 structures--;
             } else if (nxt.group == PrebuiltTusanTokenGroup.STRUCTURE){
                 structures++;
@@ -116,19 +129,13 @@ public class Loop extends Node {
         iterations++;
         interpreter.data.vars.put(as, value);
         interpreter.pos = pos;
-        boolean endBlock = false;
+        interpreter.currentToken = interpreter.tokenManager.get(pos);
 
-        while (!endBlock){
-            Token nxt = interpreter.tokenManager.nextToken();
-            if (nxt.type == PrebuiltTusanTokenType.ENDSTRUCTURE) {
-                endBlock = true;
-            } else if (nxt.type == PrebuiltTusanTokenType.BREAKSTRUCTURE){ // broken bcuz it won't work inside structures
-                run = false;
-            } else {
-                if (run){
-                    new Statement(ctx).create();
-                }
-            }
+        while (true){
+            interpreter.tokenManager.nextToken();
+            if (interpreter.pos >= bodyEnd) return; // reached this loop's end; nested ones are run by Statement
+            new Statement(ctx).create();
+            if (interpreter.end || interpreter.breaking || interpreter.caughtError) return;
         }
     }
 

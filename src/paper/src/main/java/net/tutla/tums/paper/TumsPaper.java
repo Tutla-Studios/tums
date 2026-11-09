@@ -64,7 +64,7 @@ public final class TumsPaper extends JavaPlugin {
         Tums.init(getDataFolder().toPath());
     }
 
-    /// Called by the server when Tums is enabled. Runs the scripts on the first server tick, then fires `SERVER_START`
+    /// Called by the server when Tums is enabled. Runs the scripts on the first server tick, then fires `SERVER_START`, and starts listening for the other events
     @Override
     public void onEnable() {
         // Defer script execution so dependent plugins can register syntax in their onEnable first.
@@ -72,6 +72,7 @@ public final class TumsPaper extends JavaPlugin {
             Tums.runScripts(MinecraftEnvironment.SERVER);
             TumsAPI.executeEvent("SERVER_START", null, MinecraftEnvironment.SERVER);
         });
+        getServer().getPluginManager().registerEvents(new TumsPaperEvents(), this);
     }
 
     /// Called by the server when Tums is disabled

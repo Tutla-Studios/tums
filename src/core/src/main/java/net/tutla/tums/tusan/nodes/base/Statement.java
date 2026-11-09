@@ -54,13 +54,17 @@ public class Statement extends Node {
                 value = new Effect(ctx).run();
             } else if (Arrays.asList(PrebuiltTusanTokenType.IDENTIFIER, PrebuiltTusanTokenType.LEFT_CURLY, PrebuiltTusanTokenType.NUMBER, PrebuiltTusanTokenType.STRING, PrebuiltTusanTokenType.KEYWORD).contains(token.type)){
                 value = new Expression(ctx).create();
-            } else if (token.type ==  PrebuiltTusanTokenType.BREAKSTRUCTURE){
-                value = new Return(ctx).create();
             } else {
                 interpreter.error("UnexpectedToken", "Expected valid statement got "+token.type.name()+":"+token.value, null);
             }
         } else if (token.type == PrebuiltTusanTokenType.BREAKSTRUCTURE && token.value.equals("return")){
             new Return(ctx).create();
+        } else if (token.type == PrebuiltTusanTokenType.BREAKSTRUCTURE && token.value.equals("break")){
+            if (interpreter.loopDepth == 0){
+                interpreter.error("SyntaxError", "break can only be used inside a loop", null);
+            } else {
+                interpreter.breaking = true; // the innermost loop sees this, stops, and clears it
+            }
         } else {
             interpreter.error("UnexpectedToken", "Expected valid statement got "+token.type.name()+":"+token.value, null);
         }

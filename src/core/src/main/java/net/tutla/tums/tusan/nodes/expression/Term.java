@@ -22,6 +22,22 @@ public class Term extends Node {
         super(ctx);
     }
 
+    // Any number works here: a loop counter is an Integer and a player's health a Float, not only Doubles
+    private boolean numbers(Object left, Object right, String what){
+        if (valueOf(left) instanceof Number && valueOf(right) instanceof Number) return true;
+        interpreter.error("TypeError", "Expected numbers for " + what, null);
+        value = null;
+        return false;
+    }
+
+    private static Object valueOf(Object node){
+        return node instanceof Factor f ? f.value : node instanceof Term t ? t.value : node;
+    }
+
+    private static double a(Object node){
+        return ((Number) valueOf(node)).doubleValue();
+    }
+
     public Term create(){
         Factor term1 = new Factor(ctx).create();
         if (interpreter.tokenManager.getNextToken().type == PrebuiltTusanTokenType.OPERATOR){
@@ -33,24 +49,27 @@ public class Term extends Node {
 
                 switch (op.value) {
                     case "*" -> {
-                        if (term1.value instanceof String && term2.value instanceof Double) {
-                            value = ((String) term1.value).repeat(((Double) term2.value).intValue());
-                        } else {
-                            if (!(term1.value instanceof Double) || !(term2.value instanceof Double))
-                                interpreter.error("TypeError", "Expected numbers for multiplication", null);
-                            value = (Double) term1.value * ((Double) term2.value);
+                        if (term1.value instanceof String s && term2.value instanceof Number times) {
+                            value = s.repeat(times.intValue());
+                        } else if (numbers(term1, term2, "multiplication")) {
+                            value = a(term1) * a(term2);
                         }
                     }
                     case "/" -> {
-                        if (term2.value.equals(0.0)){
-                            interpreter.error("ZeroDivisionError", "You cannot divide by 0", null);
+                        if (numbers(term1, term2, "division")) {
+                            if (a(term2) == 0) {
+                                interpreter.error("ZeroDivisionError", "You cannot divide by 0", null);
+                            } else {
+                                value = a(term1) / a(term2);
+                            }
                         }
-                        value = (Double) term1.value / (Double) term2.value;
                     }
-                    case "^" ->
-                            value = (double) (((Double) term1.value).intValue() ^ ((Double) term2.value).intValue());
-                    case "**" -> value = Math.pow((Double) term1.value, (Double) term2.value);
-                    case "%" -> value = (Double) term1.value % (Double) term2.value;
+                    case "^", "**" -> { // both are powers
+                        if (numbers(term1, term2, "a power")) value = Math.pow(a(term1), a(term2));
+                    }
+                    case "%" -> {
+                        if (numbers(term1, term2, "modulo")) value = a(term1) % a(term2);
+                    }
                 }
             } else {
                 value = term1.value;

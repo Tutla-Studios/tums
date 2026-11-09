@@ -1,33 +1,18 @@
 package net.tutla.tums.client;
 
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
-import net.tutla.tums.TumsAPI;
-import net.tutla.tums.tusan.MinecraftEnvironment;
-import net.tutla.tums.tusan.Variable;
-import net.tutla.tums.tums.objects.TumsEntity;
-import net.tutla.tums.tums.objects.TumsPlayer;
-import java.util.HashMap;
+import net.tutla.tums.common.TumsEvents;
 
 public class TumsClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-
+        // mouse buttons, scrolling and keys are fired from the mixins in client.mixins
         AttackEntityCallback.EVENT.register((player, world, hand, target, hitResult) -> {
             if (world.isClientSide()) {
-                HashMap<String, Variable> variables = new HashMap<>();
-                if (player instanceof Player otherPlayer) {
-                    variables.put("event_player", new TumsPlayer("event_player", otherPlayer));
-                    variables.put("event_entity", new TumsEntity("event_entity", target));
-                } else {
-                    variables.put("event_player", new TumsPlayer("event_player", null));
-                    variables.put("event_entity", new TumsEntity("event_entity", target));
-                }
-                TumsAPI.executeEvent("attack", variables, MinecraftEnvironment.CLIENT);
+                TumsEvents.attack(player, target);
             }
             return InteractionResult.PASS;
         });

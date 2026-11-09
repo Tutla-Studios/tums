@@ -11,8 +11,11 @@ public final class TumsCommon {
 
     private TumsCommon() {}
 
-    public static void init(Path gameDir) {
+    /**
+     * @param environment CLIENT on a game client, SERVER on a dedicated server: the side the scripts load on
+     */
+    public static void init(Path gameDir, MinecraftEnvironment environment) {
         Tums.init(gameDir.resolve("tums"));
-        Tums.runScripts(MinecraftEnvironment.SERVER);
+        Tums.runScripts(environment);
     }
 }

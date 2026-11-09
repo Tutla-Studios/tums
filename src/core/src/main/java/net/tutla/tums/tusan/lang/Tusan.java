@@ -162,13 +162,15 @@ public class Tusan {
     private Class<? extends Node> statementNode = Statement.class;
 
     private static final List<LexerRule> DEFAULT_LEXER_RULES = List.of( // ORDER MATTERS!
-            new LexerRule(PrebuiltTusanTokenType.PROPERTY, "'s(?!['\"])"),
+            // 's right after a name (box's size), so a string like 'single' is not read as a property
+            new LexerRule(PrebuiltTusanTokenType.PROPERTY, "(?<=[A-Za-z0-9_)\\]])'s(?![A-Za-z0-9_'\"])"),
             new LexerRule(PrebuiltTusanTokenType.STRING, "\"(?:[^\"\\\\]|\\\\.)*\"|'(?:[^'\\\\]|\\\\.)*'"),
+            new LexerRule(PrebuiltTusanTokenType.IDENTIFIER, "\\b\\d+(?:st|nd|rd|th)\\b").setGroup(PrebuiltTusanTokenGroup.IDENTIFIER), // ordinals: 1st, 2nd, 3rd...
             new LexerRule(PrebuiltTusanTokenType.NUMBER, "\\d+(\\.\\d+)?"),
             new LexerRule(PrebuiltTusanTokenType.BOOL, WordedPattern.makeWordedPattern(List.of("true", "false")) ),
             new LexerRule(PrebuiltTusanTokenType.NOTHING, WordedPattern.makeOneWordPattern("nothing")),
 
-            new LexerRule(PrebuiltTusanTokenType.OPERATOR, "[+\\-*/%]"),
+            new LexerRule(PrebuiltTusanTokenType.OPERATOR, "\\*\\*|[+\\-*/%^]"),
             new LexerRule(PrebuiltTusanTokenType.LOGIC, "(?:\\b(?:and|or|not|contains|in)\\b|\\|\\||&&)"),
             new LexerRule(PrebuiltTusanTokenType.COMPARISON, ">=|<=|==|!=|>|<|\\bis\\b"),
             new LexerRule(PrebuiltTusanTokenType.EQUAL, "="),
@@ -192,7 +194,8 @@ public class Tusan {
             new LexerRule(PrebuiltTusanTokenType.FUNCTION, WordedPattern.makeOneWordPattern("function"))
                     .setGroup(PrebuiltTusanTokenGroup.STRUCTURE),
 
-            new LexerRule(PrebuiltTusanTokenType.PRINT, WordedPattern.makeOneWordPattern("print")).setGroup(PrebuiltTusanTokenGroup.EFFECT)
+            new LexerRule(PrebuiltTusanTokenType.PRINT, WordedPattern.makeOneWordPattern("print")).setGroup(PrebuiltTusanTokenGroup.EFFECT),
+            new LexerRule(PrebuiltTusanTokenType.SET, WordedPattern.makeOneWordPattern("set")).setGroup(PrebuiltTusanTokenGroup.EFFECT)
     );
 
     /// Creates an empty language, with no lexer rules or nodes
@@ -274,7 +277,6 @@ public class Tusan {
             if (currentToken.type == PrebuiltTusanTokenType.ENDSCRIPT){ // how did you get here?
                 return;
             } else if (currentToken.type == PrebuiltTusanTokenType.BREAKSTRUCTURE && currentToken.value.equals("return")){
-                ctx.tokenContext.nextToken();
                 new Return(ctx).create();
             } else {
                 Node stmtNode = Node.instantiateNode(statementNode, ctx);
