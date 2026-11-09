@@ -26,6 +26,7 @@
 # Settings, as environment variables:
 #   TUMS_TEST_TIMEOUT  seconds to wait for a loader before giving up (600)
 #   TUMS_TEST_IDLE     seconds without new test output before a loader counts as done (8)
+#   TUMS_TEST_STALL    seconds without new output, before every test has started, before giving up on a loader (120)
 #
 set -uo pipefail
 
@@ -35,6 +36,7 @@ TESTS="$ROOT/tests"
 LOGS="$ROOT/build/tums-tests"
 TIMEOUT="${TUMS_TEST_TIMEOUT:-600}"
 IDLE="${TUMS_TEST_IDLE:-8}"
+STALL="${TUMS_TEST_STALL:-120}"
 LOADERS_ALL="fabric neoforge paper"
 
 run_dir(){ echo "$ROOT/src/$1/run"; }
@@ -59,12 +61,16 @@ test_loaders(){
 
 expects_error(){ grep -qE '^[[:space:]]*#[[:space:]]*expect error[[:space:]]*$' "$1"; }
 
-# The lines the scripts printed, without the log's own prefix. Fabric and NeoForge log them as
-# "... [STDOUT]: text", Paper as "[12:00:00 INFO]: text" (the first one with "[Tums] [STDOUT] " in front)
+# The lines the scripts printed, without the log's own prefix. Each loader writes them differently:
+#   fabric    "[12:00:00] [Tums scripts/INFO] (Minecraft) [STDOUT]: text"
+#   paper     "[12:00:00 INFO]: text", the first one with "[Tums] [STDOUT] " in front
+#   neoforge  "text", as it is, between its own log lines "[12:00:00] [thread/INFO] ..."
 script_output(){
     sed 's/\x1b\[[0-9;]*m//g' "$1" | awk '
         index($0, "[STDOUT]: ") { print substr($0, index($0, "[STDOUT]: ") + 10); next }
-        /^\[[0-9:]+ INFO\]: / { line = $0; sub(/^\[[0-9:]+ INFO\]: /, "", line); sub(/^\[Tums\] \[STDOUT\] /, "", line); print line }
+        /^\[[0-9:]+ INFO\]: / { line = $0; sub(/^\[[0-9:]+ INFO\]: /, "", line); sub(/^\[Tums\] \[STDOUT\] /, "", line); print line; next }
+        /^\[[0-9:]+( [A-Z]+)?\] / { next }   # any other line of the log itself
+        { print }                            # printed as it is
     ' | sed 's/^"\(\[T\] .*\)"$/\1/'
 }
 
@@ -131,6 +137,7 @@ for loader in $LOADERS; do
         count=$(wc -l <<< "$output")
         if [ "$count" != "$last_count" ]; then last_count=$count; last_change=$SECONDS; fi
         if [ "$started" -ge "${#names[@]}" ] && [ $((SECONDS - last_change)) -ge "$IDLE" ]; then outcome="done"; break; fi
+        if [ "$count" -gt 0 ] && [ $((SECONDS - last_change)) -ge "$STALL" ]; then outcome="stalled with $started of ${#names[@]} tests started"; break; fi
         if [ $((SECONDS - start)) -ge "$TIMEOUT" ]; then break; fi
     done
     stop_loader "$CURRENT_PID" "$loader"
