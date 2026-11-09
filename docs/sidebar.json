@@ -27,6 +27,7 @@
     },
     "Developer": {
         "Getting started": "/tums/developer",
+        "Spigot / Paper": "/tums/developer/paper",
         "Nodes": {
             "Node": "/tums/developer/node",
             "Parsing": "/tums/developer/node/parsing"

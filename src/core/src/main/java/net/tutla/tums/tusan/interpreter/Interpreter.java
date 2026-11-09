@@ -14,6 +14,60 @@ import net.tutla.tums.tusan.lexer.util.prebuilt.PrebuiltTusanTokenType;
 import net.tutla.tums.tums.HelloNode;
 import net.tutla.tums.tums.TumsTokenType;
 
+/// The interpreter is by far the most important part in Tums. It is the instance that parses your script.
+///
+/// ## Creating Interpreters
+///
+/// 1. Define an interpreter using `new Interpreter(Tusan language)`. With the language being the language you have created by using the previous steps, you can use `TumsAPI.getGlobalTusan()` if you want to execute the global language.
+/// 2. Set it up using `setup(InterpreterData data, TokenManager tknmanager, String _text, Path file, MinecraftEnvironment env)`.
+///
+/// That looks big doesn't it? Let's break it down:
+/// - InterpreterData: Contains all the generated data (variables, functions, events, etc)
+///     - Define using `InterpreterData(HashMap<String, Variable> vars, HashMap<String, FunctionRegistry> funcs, HashMap<String, Variable> local, List<Runnable> asyncTasks)`
+///     - If you want to provide it anything in advance, for example a variable called `me` that gets the current player, you can instantiate a new Hashmap and add one.
+///     - You can provide them all as `null` and it will instantiate an empty interpreter data.
+/// - TokenManager: You can provide a custom token manager if you want to execute a custom list of tokens
+/// - String text: Optional, if you just want to execute a string of code, you can provide it here.
+/// - String file: Optional, if you want to execute a file, you can provide it here.
+/// - MinecraftEnvironment: This is the environment the script, by default `SERVER`
+/// 3. Optional: Set the context using `setContext(TusanContext ctx)`. This is applicable if you want to provide a custom [context](https://wiki.tutla.net/tums/developer/context).
+///
+/// That's it! You're ready to start. Here's an example if you're still confused:
+///
+/// ```java
+/// public static void runScript(Path script, Tusan tusan, MinecraftEnvironment environment){
+///     Interpreter interpreter = new Interpreter(tusan);
+///     interpreter.setup(null,null,null, script, environment);
+///     interpreter.setContext(new TusanContext(interpreter)); // not necessary
+/// }
+/// ```
+///
+/// ## Executing Scripts
+///
+/// To execute a script just call `compile()` on the interpreter. __Or you could just use `TumsAPI.runScript(Path script, Tusan tusan, MinecraftEnvironment environment)` if you're not creating an interpreter__
+///
+/// ```java
+/// public static void runScript(Path script, Tusan tusan, MinecraftEnvironment environment){
+///     Interpreter interpreter = new Interpreter(tusan);
+///     interpreter.setup(null,null,null, script, environment);
+///     interpreter.setContext(new TusanContext(interpreter));
+///
+///     try {
+///         interpreter.compile();
+///     } catch (Exception e){
+///         e.printStackTrace();
+///     }
+///
+///     getRegister().add(interpreter.data);
+/// }
+/// ```
+///
+/// ## Methods
+///
+/// <!-- methods -->
+///
+/// @tums.title Interpreter
+/// @tums.summary Running your scripts in tums
 public class Interpreter {
 
     private final Tusan tusan;
@@ -41,11 +95,13 @@ public class Interpreter {
     private MinecraftEnvironment compileEnvironment = MinecraftEnvironment.SERVER;
 
 
+    /// Creates an interpreter for a language
     public Interpreter(Tusan tusan) {
         this.tusan = tusan;
         this.lang = tusan.getLang();
     }
 
+    /// Prepares the interpreter to run a script. Any argument can be `null`
     public void setup(InterpreterData data, TokenManager tknmanager, String _text, Path file, MinecraftEnvironment env){
         this.data = data != null ? data : new InterpreterData(null, null, null, null);
 
@@ -76,6 +132,7 @@ public class Interpreter {
         this.currentToken = tokenManager.get(this.pos);
     }
 
+    /// Runs the script
     public void compile() {
         tokenManager.changeTokensParent(this);
         end = false;
@@ -99,6 +156,7 @@ public class Interpreter {
         tusan.compile(ctx);
     }
 
+    /// Uses a custom [context](https://wiki.tutla.net/tums/developer/context) instead of the default one
     public void setContext(TusanContext ctx){
         this.ctx = ctx;
     }
@@ -108,6 +166,7 @@ public class Interpreter {
 
 
 
+    /// Reports an error with the position it happened at, and stops the script
     public void error(String name, String detail, List<String> notes){
         if (!caughtError){
             System.out.println("================ ERROR ================");
@@ -178,6 +237,7 @@ public class Interpreter {
         // System.exit(0);
     }
 
+    /// Returns a new interpreter set up with the same data and tokens
     public Interpreter clone(){
         Interpreter intr = new Interpreter(tusan);
         intr.setup(data, tokenManager, text, filePath, intr.getCompileEnvironment());
@@ -188,14 +248,17 @@ public class Interpreter {
         this.lang = lang;
     }
 
+    /// Returns the language this interpreter runs
     public Tusan getTusan(){
         return tusan;
     }
 
+    /// Returns the environment the script runs in
     public MinecraftEnvironment getCompileEnvironment(){
         return compileEnvironment;
     }
 
+    /// Sets the environment the script runs in, `SERVER` when `null`
     public void setCompileEnvironment(MinecraftEnvironment env){
         if (env == null){
             env = MinecraftEnvironment.SERVER;

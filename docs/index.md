@@ -12,14 +12,14 @@ Tums is a Minecraft project that simplifies Minecraft development by introducing
 
 ## How to install
 
-1. Download the jar for your loader from [Modrinth](https://modrinth.com/mod/tums)
+1. Download the latest version from [Modrinth](https://modrinth.com/mod/tums). The same jar works on every loader.
 2. Put it in the right folder:
 
-| Loader       | Jar                         | Put it in  | Scripts go in                       |
-|--------------|-----------------------------|------------|-------------------------------------|
-| Fabric       | `tums-fabric-<version>.jar`   | `mods/`    | `[YOUR MINECRAFT FOLDER]/tums/scripts/` |
-| NeoForge     | `tums-neoforge-<version>.jar` | `mods/`    | `[YOUR MINECRAFT FOLDER]/tums/scripts/` |
-| Spigot/Paper | `tums-paper-<version>.jar`    | `plugins/` | `[YOUR SERVER FOLDER]/plugins/Tums/scripts/` |
+| Loader       | Put it in  | Scripts go in                                |
+|--------------|------------|----------------------------------------------|
+| Fabric       | `mods/`    | `[YOUR MINECRAFT FOLDER]/tums/scripts/`      |
+| NeoForge     | `mods/`    | `[YOUR MINECRAFT FOLDER]/tums/scripts/`      |
+| Spigot/Paper | `plugins/` | `[YOUR SERVER FOLDER]/plugins/Tums/scripts/` |
 
 3. Start Minecraft and enjoy the simplicity of Tums!
 
@@ -41,11 +41,11 @@ Tums is fully open source and contains API support for creating custom syntax an
 
 ### Fabric / NeoForge mods
 
-1. Download the jar for your loader and put it in `[PROJECT FOLDER]/libs/`
+1. Download the mod and put it in `[PROJECT FOLDER]/libs/`
 ```yaml
 ├── build.gradle
 ├── libs
-│   └── tums-fabric-1.0.0.jar <-- here!
+│   └── tums-1.0.0.jar <-- here!
 ├── settings.gradle
 └── src
 ```
@@ -53,10 +53,10 @@ Tums is fully open source and contains API support for creating custom syntax an
 ```cpp
 dependencies {
     // Fabric
-    modImplementation files("libs/tums-fabric-1.0.0.jar") // <---- HERE!
+    modImplementation files("libs/tums-1.0.0.jar") // <---- HERE!
 
     // NeoForge
-    implementation files("libs/tums-neoforge-1.0.0.jar") // <---- HERE!
+    implementation files("libs/tums-1.0.0.jar") // <---- HERE!
 }
 ```
 3. Import `TumsAPI` and start developing!
@@ -66,14 +66,14 @@ dependencies {
 1. Add the plugin jar as a `compileOnly` dependency and put it in your server's `plugins` folder.
 ```cpp
 dependencies {
-    compileOnly files("libs/tums-paper-1.0.0.jar")
+    compileOnly files("libs/tums-1.0.0.jar")
 }
 ```
 2. Depend on it in your `plugin.yml`:
 ```yaml
 depend: [Tums]
 ```
-3. Register custom syntax in your `onEnable` using `TumsAPI.getGlobalTusan()` (or `TumsPaper.getTusan()`). Scripts run on the first server tick, after every plugin is enabled.
+3. Register custom syntax in your `onEnable` using `TumsAPI.getGlobalTusan()` (or `TumsPaper.getTusan()`). Scripts run on the first server tick, after every plugin is enabled. Read more in the [Spigot / Paper docs](/tums/developer/paper).
 
 ### Project layout
 
@@ -85,7 +85,7 @@ depend: [Tums]
 | `src/neoforge` | NeoForge entrypoint                                                           |
 | `src/paper`    | Spigot/Paper plugin entrypoint                                                |
 
-Build everything with `./gradlew build`; jars end up in `src/<module>/build/libs/`.
+Build everything with `./gradlew build`. The universal jar ends up in `build/libs/`, and each module's own jar in `src/<module>/build/libs/`.
 
 Read the full developer docs in the [Tums API documentation](/tums/developer/).
 

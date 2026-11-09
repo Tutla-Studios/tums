@@ -38,6 +38,12 @@ subprojects {
         it.options.encoding = 'UTF-8'
     }
 
+    // The wiki pages under docs/developer are generated from class javadoc (see docs/generate.sh),
+    // which carries the page title and summary as these tags.
+    tasks.withType(Javadoc).configureEach {
+        options.tags('tums.title:t:Wiki title:', 'tums.summary:t:Wiki summary:')
+    }
+
     jar {
         from(rootProject.file('LICENSE.txt')) {
             rename { "${it}_${rootProject.archives_base_name}" }
