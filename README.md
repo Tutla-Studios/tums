@@ -1,18 +1,25 @@
 # Tums
-A Minecraft Mod that makes Minecraft Modding simpler
+A Minecraft mod and plugin that makes Minecraft development simpler
 ---
 
-Tums is a Fabric Minecraft Mod that simplifies Minecraft Mod Development by introducing a simple, user-friendly language based on [Tusan](https://wiki.tutla.net/tusan). It was initially meant to be an extension for [CCS](https://wiki.tutla.net/ccs)
+Tums is a Minecraft project that simplifies Minecraft development by introducing a simple, user-friendly language based on [Tusan](https://wiki.tutla.net/tusan). It runs on **Fabric**, **NeoForge** and **Spigot/Paper**, so the same scripts work in your client, on a modded server or on a plugin server. It was initially meant to be an extension for [CCS](https://wiki.tutla.net/ccs)
 
 ## How to install
 
-1. Download the latest version from [Modrinth](https://modrith.com/mod/tums)
-2. Drag and drop the downloaded `.jar` file into your `mods` folder
+1. Download the jar for your loader from [Modrinth](https://modrinth.com/mod/tums)
+2. Put it in the right folder:
+
+| Loader       | Jar                         | Put it in  | Scripts go in                       |
+|--------------|-----------------------------|------------|-------------------------------------|
+| Fabric       | `tums-fabric-<version>.jar`   | `mods/`    | `[YOUR MINECRAFT FOLDER]/tums/scripts/` |
+| NeoForge     | `tums-neoforge-<version>.jar` | `mods/`    | `[YOUR MINECRAFT FOLDER]/tums/scripts/` |
+| Spigot/Paper | `tums-paper-<version>.jar`    | `plugins/` | `[YOUR SERVER FOLDER]/plugins/Tums/scripts/` |
+
 3. Start Minecraft and enjoy the simplicity of Tums!
 
 ## How to write scripts?
 
-Scripting in tums is relatively simple and includes a system to introduce custom syntax via mods. To start writing a script, simply create a new file with a `.tsn` extension in `[YOUR MINECRAFT FOLDER]/tums/scripts/`. Here is a basic example of a script:
+Scripting in tums is relatively simple and includes a system to introduce custom syntax via mods and plugins. To start writing a script, simply create a new file with a `.tsn` extension in your loader's scripts folder (see the table above). Here is a basic example of a script:
 
 ```lua
 on left_click
@@ -24,48 +31,36 @@ end
 
 ## For developers
 
-Tums is fully open source and contains API support for creating custom syntax and expanding the language or [creating your own language](https://wiki.tutla.net/tums/developer/creating-your-own).
+Tums is fully open source and contains API support for creating custom syntax and expanding the language or [creating your own language](https://wiki.tutla.net/tums/developer/creating-your-own). The API is the same on every loader: register your syntax through `TumsAPI`.
 
-To get started, follow these steps:
+### Fabric / NeoForge mods
 
-1. Download the mod and put it in `[PROJECT FOLDER]/libs/`
+1. Download the jar for your loader and put it in `[PROJECT FOLDER]/libs/`
 ```yaml
-├── build
 ├── build.gradle
-├── gradle
-├── gradle.properties
-├── gradlew
-├── gradlew.bat
 ├── libs
-│   └── tums-0.1.0.jar <-- here!
-├── LICENSE
-├── README.md
+│   └── tums-fabric-1.0.0.jar <-- here!
 ├── settings.gradle
 └── src
-    ├── client
-    └── main
 ```
-2.. Add the mod as a dependancy in `build.gradle` under the `dependencies` section.
+2. Add it as a dependency in `build.gradle` under the `dependencies` section.
 ```cpp
 dependencies {
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    // Fabric
+    modImplementation files("libs/tums-fabric-1.0.0.jar") // <---- HERE!
 
-    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
-    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-    implementation files("libs/[MOD FILENAME].jar") // <---- HERE!
+    // NeoForge
+    implementation files("libs/tums-neoforge-1.0.0.jar") // <---- HERE!
 }
 ```
 3. Import `TumsAPI` and start developing!
 
 ### Spigot / Paper plugins
 
-Tums also ships as a Spigot/Paper plugin (`tums-paper-<version>.jar`). Scripts go in `plugins/Tums/scripts/`.
-
 1. Add the plugin jar as a `compileOnly` dependency and put it in your server's `plugins` folder.
 ```cpp
 dependencies {
-    compileOnly files("libs/tums-paper-0.1.0.jar")
+    compileOnly files("libs/tums-paper-1.0.0.jar")
 }
 ```
 2. Depend on it in your `plugin.yml`:
@@ -93,11 +88,11 @@ Read the full developer docs in the [Tums API documentation](https://wiki.tutla.
 ## 💬 Support, Tracking & More
 
 - 💬 Join our [**Discord**](https://discord.tutla.net) for sneak peeks & community support
-- ⭐ Star us on [**GitHub**](https://github.com/TutlaMC/manhunt-plus)
+- ⭐ Star us on [**GitHub**](https://github.com/TutlaMC/tums)
 - 🌐 Visit our [**Website**](https://tutla.net) for updates
-- 💙 Contribute by [**donating**](https://donatr.ee/tutlamc?utm_source=copy&utm_medium=share)
+- 💙 Contribute by [**donating**](https://donatr.ee/tutlamc)
 
-Think we’re missing something? **Contribute on [GitHub](https://github.com/TutlaMC/manhunt-plus)**
+Think we’re missing something? **Contribute on [GitHub](https://github.com/TutlaMC/tums)**
 
 ---
 
