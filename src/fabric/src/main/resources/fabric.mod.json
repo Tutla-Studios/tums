@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "tums",
+  "version": "${version}",
+  "name": "Tums",
+  "description": "",
+  "authors": ["TutlaMC"],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/tums/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-datagen": [
+      "net.tutla.tums.client.TumsDataGenerator"
+    ],
+    "client": [
+      "net.tutla.tums.client.TumsClient"
+    ],
+    "main": [
+      "net.tutla.tums.fabric.TumsFabric"
+    ]
+  },
+  "mixins": [
+    "tums.mixins.json",
+    {
+      "config": "tums.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.2",
+    "minecraft": "~26.3",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}

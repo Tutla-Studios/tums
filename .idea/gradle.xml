@@ -8,6 +8,11 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/src/common" />
+            <option value="$PROJECT_DIR$/src/core" />
+            <option value="$PROJECT_DIR$/src/fabric" />
+            <option value="$PROJECT_DIR$/src/neoforge" />
+            <option value="$PROJECT_DIR$/src/paper" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="true" />

@@ -1,0 +1,16 @@
+plugins {
+    id 'dev.architectury.loom-no-remap'
+    id 'architectury-plugin'
+}
+
+architectury {
+    common rootProject.enabled_platforms.split(',')
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+    // Only for the @Environment annotations and Mixin; no Fabric-specific code should live in common.
+    implementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
+
+    api project(':core')
+}

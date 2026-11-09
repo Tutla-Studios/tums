@@ -58,6 +58,34 @@ dependencies {
 ```
 3. Import `TumsAPI` and start developing!
 
+### Spigot / Paper plugins
+
+Tums also ships as a Spigot/Paper plugin (`tums-paper-<version>.jar`). Scripts go in `plugins/Tums/scripts/`.
+
+1. Add the plugin jar as a `compileOnly` dependency and put it in your server's `plugins` folder.
+```cpp
+dependencies {
+    compileOnly files("libs/tums-paper-0.1.0.jar")
+}
+```
+2. Depend on it in your `plugin.yml`:
+```yaml
+depend: [Tums]
+```
+3. Register custom syntax in your `onEnable` using `TumsAPI.getGlobalTusan()` (or `TumsPaper.getTusan()`). Scripts run on the first server tick, after every plugin is enabled.
+
+### Project layout
+
+| Module         | Contents                                                                      |
+|----------------|-------------------------------------------------------------------------------|
+| `src/core`     | Pure-Java Tusan lexer/interpreter and the Tums language (no Minecraft deps)  |
+| `src/common`   | Architectury common code (Minecraft-dependent, loader-agnostic)               |
+| `src/fabric`   | Fabric entrypoints, client events and mixins                                  |
+| `src/neoforge` | NeoForge entrypoint                                                           |
+| `src/paper`    | Spigot/Paper plugin entrypoint                                                |
+
+Build everything with `./gradlew build`; jars end up in `src/<module>/build/libs/`.
+
 Read the full developer docs in the [Tums API documentation](https://wiki.tutla.net/tums/developer/).
 
 ---

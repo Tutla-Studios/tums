@@ -1,0 +1,26 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "All-Rights-Reserved"
+
+[[mods]]
+modId = "tums"
+version = "${version}"
+displayName = "Tums"
+authors = "TutlaMC"
+description = '''
+A Minecraft Mod that makes Minecraft Modding simpler
+'''
+
+[[dependencies.tums]]
+modId = "neoforge"
+type = "required"
+versionRange = "[${neoforge_version},)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.tums]]
+modId = "minecraft"
+type = "required"
+versionRange = "[${minecraft_version},)"
+ordering = "NONE"
+side = "BOTH"

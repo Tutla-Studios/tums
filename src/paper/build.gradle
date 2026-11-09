@@ -1,0 +1,50 @@
+plugins {
+    id 'com.gradleup.shadow'
+    id 'xyz.jpenilla.run-paper'
+}
+
+repositories {
+    maven { url = 'https://repo.papermc.io/repository/maven-public/' }
+}
+
+configurations {
+    // Files in this configuration are bundled into the final plugin jar.
+    shadowBundle {
+        canBeResolved = true
+        canBeConsumed = false
+    }
+    implementation.extendsFrom shadowBundle
+}
+
+dependencies {
+    // Only Bukkit API is used, so the plugin also runs on Spigot.
+    compileOnly "io.papermc.paper:paper-api:${rootProject.paper_api_version}"
+
+    shadowBundle project(':core')
+}
+
+processResources {
+    def props = [version: project.version, api_version: rootProject.plugin_api_version]
+    inputs.properties props
+
+    filesMatching('plugin.yml') {
+        expand props
+    }
+}
+
+shadowJar {
+    configurations = [project.configurations.shadowBundle]
+    archiveClassifier = ''
+}
+
+jar {
+    archiveClassifier = 'slim'
+}
+
+assemble.dependsOn shadowJar
+
+// ./gradlew :paper:runServer — starts a Paper test server in src/paper/run with the plugin loaded.
+tasks.named('runServer') {
+    minecraftVersion(rootProject.minecraft_version)
+    // run-paper picks up the shadowJar output automatically.
+}

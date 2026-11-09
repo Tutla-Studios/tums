@@ -1,0 +1,6 @@
+name: Tums
+version: '${version}'
+main: net.tutla.tums.paper.TumsPaper
+api-version: '${api_version}'
+authors: [TutlaMC]
+description: A simple, user-friendly scripting language (Tusan) for Spigot/Paper servers
