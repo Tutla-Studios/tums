@@ -46,5 +46,6 @@ public enum PrebuiltTusanTokenType implements TokenType { // these are currently
     FUNCTION,
 
     // effects
-    PRINT
+    PRINT,
+    SET
 }

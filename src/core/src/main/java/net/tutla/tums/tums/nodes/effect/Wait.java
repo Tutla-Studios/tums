@@ -16,7 +16,7 @@ public class Wait extends Node {
 
     public Wait create() {
         try {
-            interpreter.tokenManager.nextToken();
+            // the statement loop has already moved past "wait", so the current token starts the expression
             Double time = (Double) new Expression(ctx).create().value;
             Thread.sleep(time.intValue()* 1000L);
         } catch (InterruptedException e) {

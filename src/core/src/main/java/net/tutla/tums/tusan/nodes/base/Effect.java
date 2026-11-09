@@ -23,6 +23,7 @@ public class Effect extends Node {
         super(ctx);
         NodeConfig conf = new NodeConfig();
         conf.addCategoryToken(PrebuiltTusanTokenType.PRINT, Print.class);
+        conf.addCategoryToken(PrebuiltTusanTokenType.SET, Set.class);
         this.setNodeConfig(conf);
 //        if (token.value.equals("print")){
 //            interpreter.tokenManager.nextToken();

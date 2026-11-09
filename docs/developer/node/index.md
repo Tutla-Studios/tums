@@ -97,7 +97,7 @@ public class YourModInitializer implements ModInitializer {
 - `getNodeConfig()` - Returns how this node is run
 - `setNodeConfig(NodeConfig conf)` - Changes how this node is run, for example to make it a category node
 - `verify()` - Does nothing by default. Override it to check your node before it runs
-- `run()` - Runs the node: a category node runs the node mapped to the current token, any other node calls `create()` unless its `NodeConfig` says to use a custom implementation
+- `run()` - Runs the node: a category node runs the node mapped to the current token, any other node sets `token` to the current token and calls `create()`, unless its `NodeConfig` says to use a custom implementation
 - `create()` - Your node's logic. Override this, read [Parsing](/tums/developer/node/parsing)
 - `instantiateNode(Class<T> clazz, Object... args)` - Creates a node from its class, finding the constructor that fits the arguments
 

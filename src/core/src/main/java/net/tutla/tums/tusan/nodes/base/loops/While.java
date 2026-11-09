@@ -1,6 +1,7 @@
 package net.tutla.tums.tusan.nodes.base.loops;
 
 import net.tutla.tums.tusan.TusanContext;
+import net.tutla.tums.tusan.lexer.util.prebuilt.PrebuiltTusanTokenGroup;
 import net.tutla.tums.tusan.node.Node;
 import net.tutla.tums.tusan.lexer.Token;
 import net.tutla.tums.tusan.lexer.util.prebuilt.PrebuiltTusanTokenType;
@@ -23,11 +24,11 @@ public class While extends Node {
 
     public While(TusanContext ctx){
         super(ctx);
-        currentPos = interpreter.pos;
-        endPos = currentPos;
     }
 
     public While create(){
+        currentPos = interpreter.pos;
+        endPos = currentPos;
         check();
 
         // this method is inefficient but does it look like i fucking care
@@ -42,10 +43,8 @@ public class While extends Node {
                 } else {
                     structures--;
                 }
-            } else if (nxt.type == PrebuiltTusanTokenType.STRUCTURE) {
+            } else if (nxt.group == PrebuiltTusanTokenGroup.STRUCTURE) {
                 structures++;
-            } else {
-                interpreter.tokenManager.nextToken();
             }
         }
         interpreter.pos = currentPos;
@@ -54,24 +53,20 @@ public class While extends Node {
         while (cond){
             Token nxt = interpreter.tokenManager.nextToken();
             if (nxt.type== PrebuiltTusanTokenType.ENDSTRUCTURE){
-                if (structures == 0){
-                    check();
-                } else {
-                    structures--;
-                }
-            } else if (nxt.type == PrebuiltTusanTokenType.STRUCTURE) {
-                structures++;
+                check();
             } else {
                 new Statement(ctx).create();
             }
         }
         interpreter.pos = endPos;
+        interpreter.currentToken = interpreter.tokenManager.get(endPos);
 
         return this;
     }
 
-    public void check(){
+    private void check(){
         interpreter.pos = currentPos;
+        interpreter.currentToken = interpreter.tokenManager.get(currentPos);
         Expression condition = new Expression(ctx).create();
         interpreter.tokenManager.expectToken(PrebuiltTusanTokenType.KEYWORD, "do");
         if (!(condition.value instanceof Boolean e)){

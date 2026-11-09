@@ -22,7 +22,7 @@ This is a basic loop which has 2 types
   - It will loop the code [expression] (as a number) times
 
 You want to access the current item on the loop?
-- TuSK has a default iter called `loop-item`
+- TuSK has a default iter called `loop_item`
 - If you want to use your on variable for this you can use `as [variable name]` after declaring the loop for example: `loop 10 times as x` and x will be the loop iteration
 
 ## While Loop

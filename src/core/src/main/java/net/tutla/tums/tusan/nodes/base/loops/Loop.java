@@ -4,6 +4,7 @@ import net.tutla.tums.tusan.TusanContext;
 import net.tutla.tums.tusan.Variable;
 import net.tutla.tums.tusan.node.Node;
 import net.tutla.tums.tusan.lexer.Token;
+import net.tutla.tums.tusan.lexer.util.prebuilt.PrebuiltTusanTokenGroup;
 import net.tutla.tums.tusan.lexer.util.prebuilt.PrebuiltTusanTokenType;
 import net.tutla.tums.tusan.nodes.base.Statement;
 import net.tutla.tums.tusan.nodes.expression.Expression;
@@ -24,7 +25,7 @@ import java.util.Arrays;
 ///   - It will loop the code [expression] (as a number) times
 ///
 /// You want to access the current item on the loop?
-/// - TuSK has a default iter called `loop-item`
+/// - TuSK has a default iter called `loop_item`
 /// - If you want to use your on variable for this you can use `as [variable name]` after declaring the loop for example: `loop 10 times as x` and x will be the loop iteration
 ///
 /// <!-- include While -->
@@ -33,6 +34,7 @@ import java.util.Arrays;
 /// @tums.summary How to use loops in tums
 public class Loop extends Node {
     private Integer pos;
+    private int iterations = 0;
     private Boolean end = false;
     private Boolean run = true;
 
@@ -67,7 +69,7 @@ public class Loop extends Node {
         Boolean run = true;
 
         if (times instanceof Integer){
-            for (int i = 0; i <= ((int) times); i++) {
+            for (int i = 0; i < ((int) times); i++) { // "loop 3 times" runs for 0, 1 and 2
                 loopExecute(new Variable(as, i, null));
             }
         } else {
@@ -81,16 +83,37 @@ public class Loop extends Node {
                 }
             } else if (times instanceof String){
                 for (int i = 0; i < ((String) times).length(); i++) {
-                    char c = ((String) times).charAt(i);
-                    loopExecute(new Variable(as, i, null));
+                    String c = String.valueOf(((String) times).charAt(i));
+                    loopExecute(new Variable(as, c, null));
                 }
             }else {
                 interpreter.error("TusanError", "Tusan does not support this iterable", null);
             }
         }
+        if (iterations == 0){
+            skipBody();
+        }
+    }
+
+    // With nothing to loop over the body never ran, so nothing has moved past it yet: step over it to its
+    // end, so it does not run once as ordinary code after the loop
+    private void skipBody(){
+        interpreter.pos = pos;
+        int structures = 0;
+        while (true){
+            Token nxt = interpreter.tokenManager.nextToken();
+            if (nxt == null) return;
+            if (nxt.type == PrebuiltTusanTokenType.ENDSTRUCTURE){
+                if (structures == 0) return;
+                structures--;
+            } else if (nxt.group == PrebuiltTusanTokenGroup.STRUCTURE){
+                structures++;
+            }
+        }
     }
 
     public void loopExecute(Variable value){
+        iterations++;
         interpreter.data.vars.put(as, value);
         interpreter.pos = pos;
         boolean endBlock = false;

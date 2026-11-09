@@ -128,7 +128,7 @@ public class Node {
 
     }
 
-    /// Runs the node: a category node runs the node mapped to the current token, any other node calls `create()` unless its `NodeConfig` says to use a custom implementation
+    /// Runs the node: a category node runs the node mapped to the current token, any other node sets `token` to the current token and calls `create()`, unless its `NodeConfig` says to use a custom implementation
     public Node run(){
         boolean runCreate = true;
         if (nodeConf.isCategory()){
@@ -146,6 +146,9 @@ public class Node {
         }
 
         if (runCreate && !nodeConf.isUseCustom()){
+            // the node was created on its keyword, but by now the statement loop has moved on to the
+            // token after it (unless the config says dontSendNext), which is what create() works from
+            token = ctx.getCurrentToken();
             create();
         }
 
