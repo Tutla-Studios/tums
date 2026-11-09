@@ -12,6 +12,25 @@ import net.tutla.tums.tusan.nodes.base.function.ExecuteFunction;
 
 import java.util.*;
 
+/// ## Factor
+///
+/// This is the atom of TuSK. A Factor takes in a `NUMBER`, `STRING`, `BOOL`, `TYPE`, `KEYWORD` or `IDENTIFIER`. A Factor could be:
+///
+/// - A Number
+/// - A String
+/// - A Boolean (true/false)
+/// - A Type (any of the above)
+/// - `( [expression] )` (So we can use brackets and combine [expression]s, this lets put [expression]s inside [expression]s aswell)
+/// - A Function (aka `IDENTIFIER`)
+/// - A Variable (aka `IDENTIFIER`)
+///   - Could be just a variable
+///   - Could be a property
+///   - Could be an item of a list/string, to access an item of a list/string you can `[ordinal number] item in [expression]` where ordinal number is 1st 2nd 3rd 4th 5th... and expression is a list/string
+///     - Example `3rd item in "javascript", "python", "kungfu"` returns `"kungfu"`
+/// - A List
+///   - Any expression seperated by commas will be made into a list
+///   - For example: `"bats", "balls", "wickets"` makes a list
+/// - A function (effects/functions that return variables, you could make your own or read the [effects list](https://wiki.tutla.net/tums/scripting/basic/effects)
 public class Factor extends Node {
     public Object value;
     private final Utils util = new Utils();

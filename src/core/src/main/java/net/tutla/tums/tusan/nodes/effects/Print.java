@@ -5,6 +5,10 @@ import net.tutla.tums.tusan.node.Node;
 import net.tutla.tums.tusan.lexer.Token;
 import net.tutla.tums.tusan.nodes.expression.Expression;
 
+/// ### print
+/// ```print [expression]```
+///
+/// This prints the expression to the console
 public class Print extends Node {
     public Print(TusanContext ctx){
         super(ctx);

@@ -75,21 +75,32 @@ public class Interpreter {
 
     private TusanContext ctx = null;
 
+    /// Helpers for working with values and identifiers
     public Utils util = new Utils();
 
+    /// All the data the script has made: variables, functions, events, etc
     public InterpreterData data;
+    /// The token manager, read about it in [Parsing](https://wiki.tutla.net/tums/developer/node/parsing)
     public TokenManager tokenManager = new TokenManager(this);
 
+    /// The script's code
     public String text;
+    /// The absolute path of the script file, or `<stdin>` when running code from a string
     public String file;
+    /// The value a `return` gave back, when running a function
     public Object returned;
+    /// Whether this interpreter is running a function's body
     public Boolean isFunction = false;
 
     private Path filePath;
 
+    /// Whether the script has finished
     public Boolean end = false;
+    /// Whether an error has been reported
     public Boolean caughtError = false;
+    /// The position of the current token
     public int pos = 0;
+    /// The current token
     public Token currentToken;
 
     private MinecraftEnvironment compileEnvironment = MinecraftEnvironment.SERVER;
@@ -185,6 +196,7 @@ public class Interpreter {
         caughtError = true;
     }
 
+    /// Returns the code around the current position, with arrows pointing at the current token. Used by `error`
     public String arrowsAtPosition(){
         StringBuilder recreated = new StringBuilder();
         StringBuilder arrows = new StringBuilder();
@@ -218,6 +230,7 @@ public class Interpreter {
         return recreated.toString();
     }
 
+    /// Reads a whole script file
     public static String readFileContents(Path path) {
         try {
             return Files.readString(path);
@@ -229,6 +242,7 @@ public class Interpreter {
 
 
 
+    /// Marks the script as finished, so nothing after the current token runs
     public void meetEnd(){
         this.end = true;
         if (!isFunction){
@@ -244,6 +258,7 @@ public class Interpreter {
         return intr;
     }
 
+    /// Replaces the lexer rules this interpreter reads the script with
     public void setLanguage(TusanLanguageRules lang){
         this.lang = lang;
     }

@@ -7,6 +7,16 @@ import net.tutla.tums.tusan.node.NodeConfig;
 import net.tutla.tums.tusan.nodes.effects.Print;
 import net.tutla.tums.tusan.nodes.effects.Set;
 
+/// Effects are what you want the language to do or effect. Here are some example effects to get started:
+///
+/// <!-- include Print -->
+///
+/// <!-- include Set -->
+///
+/// <!-- include Wait -->
+///
+/// @tums.title Effects
+/// @tums.summary How to use effects in tums
 public class Effect extends Node {
     public Object value;
     public Effect(TusanContext ctx){

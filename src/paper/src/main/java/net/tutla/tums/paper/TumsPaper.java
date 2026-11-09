@@ -57,12 +57,14 @@ import java.nio.file.Path;
 public final class TumsPaper extends JavaPlugin {
     private static TumsPaper instance;
 
+    /// Called by the server when Tums loads, before any plugin is enabled. Sets up Tums in `plugins/Tums/`
     @Override
     public void onLoad() {
         instance = this;
         Tums.init(getDataFolder().toPath());
     }
 
+    /// Called by the server when Tums is enabled. Runs the scripts on the first server tick, then fires `SERVER_START`
     @Override
     public void onEnable() {
         // Defer script execution so dependent plugins can register syntax in their onEnable first.
@@ -72,6 +74,7 @@ public final class TumsPaper extends JavaPlugin {
         });
     }
 
+    /// Called by the server when Tums is disabled
     @Override
     public void onDisable() {
         instance = null;

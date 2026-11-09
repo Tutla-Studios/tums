@@ -12,6 +12,12 @@ import net.tutla.tums.tusan.nodes.expression.Expression;
 import java.util.List;
 import java.util.Map;
 
+/// ### set
+/// ```set [variable name] to [expression]```
+///
+/// - Variable Name could be a variable or a property (read Variable)
+/// - This sets the variable name to the expression to be used later on
+/// - Read about it in [Variables](https://wiki.tutla.net/tums/scripting/basic/variable)
 public class Set extends Node {
     private Utils utils = new Utils();
     public Set(TusanContext ctx){

@@ -145,6 +145,10 @@ A `Tusan` language has the following methods:
 - `getNodes()` - Returns every registered node
 - `linkNodeToStatement(TokenType tokenType, Class<? extends Node> node)` - Runs a node from the main statement loop whenever a token of this type starts a statement
 - `linkNodeToStatement(TokenGroup tokenGroup, Class<? extends Node> node)` - Runs a node from the main statement loop whenever a token of this group starts a statement
+- `getStatementTokenNodeMap()` - Returns the token types linked to nodes with `linkNodeToStatement`
+- `getStatementTokenGroupNodeMap()` - Returns the token groups linked to nodes with `linkNodeToStatement`
 - `registerLexerRule(LexerRule rule)` - Adds a [lexer rule](/tums/developer/lexer/rules), your syntax
+- `compile(TusanContext ctx)` - Runs the main statement loop over the interpreter's tokens. Called by `Interpreter.compile()`
+- `getLang()` - Returns the lexer rules of this language
 - `getStatementNode()` - Returns the node every statement starts from
 - `setStatementNode(Class<? extends Node> statementNode)` - Replaces the node every statement starts from

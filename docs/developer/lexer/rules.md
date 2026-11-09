@@ -69,3 +69,11 @@ In the place of `WordedPattern.makeOneWordPattern("hello")` you can use any rege
 
 - `LexerRule(TokenType type, String regex)` - Creates a rule that turns text matching the regex into a token of this type
 - `setGroup(TokenGroup e)` - Puts the token in a group, and returns the rule so it can be chained
+- `type()` - Returns the token type this rule makes
+- `regex()` - Returns the regex this rule matches
+
+## Fields
+
+- `TokenType type` - The token type this rule makes
+- `String regex` - The regex this rule matches
+- `TokenGroup group` - The group the token is in, `NONE` unless set with `setGroup`

@@ -8,6 +8,14 @@ import net.tutla.tums.tusan.lexer.util.prebuilt.PrebuiltTusanTokenType;
 import java.util.Arrays;
 import java.util.Objects;
 
+/// ## Term
+///
+/// A Term could be a [factor] or a `[factor] (/|*|^|%|) [factor]`:
+///
+/// - [factor] (Look at the previous heading, everything under there comes here even expressions because of parenthesis)
+/// - [factor] * [factor]: Multiplication
+/// - [factor] / [factor]: Division
+/// - [factor] ^ [factor] or [factor] % [factor]
 public class Term extends Node {
     public Object value;
     public Term(TusanContext ctx){

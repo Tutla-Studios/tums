@@ -64,8 +64,6 @@ import java.util.List;
 ///
 /// <!-- methods -->
 ///
-/// *It does include other features but these are the important/useful ones*
-///
 /// From here all you do is read the `value` of the tokens, and just keep parsing with the features in the TokenManager.
 ///
 /// @tums.title Parsing
@@ -74,6 +72,7 @@ public class TokenManager {
     Interpreter interpreter;
     private List<Token> tokens;
 
+    /// Creates a token manager for an interpreter. Every interpreter already has one in `interpreter.tokenManager`
     public TokenManager(Interpreter interpreter){
         this.interpreter = interpreter;
     }
@@ -127,6 +126,7 @@ public class TokenManager {
         }
     }
 
+    /// Expect the next token to match one of the `|` separated options, each a token type like `IDENTIFIER` or a value like `KEYWORD:item`. If none match it calls an error
     public Token expectTokenClassic(String tokenTypes) {
         String[] types = tokenTypes.replace(" ", "").split("\\|");
         Token nextTkn = getNextToken();
@@ -154,10 +154,12 @@ public class TokenManager {
         return null;
     }
 
+    /// Replaces the list of tokens
     public void setTokens(List<Token> tokens) {
         this.tokens = tokens;
     }
 
+    /// Moves the tokens and this token manager over to another interpreter
     public List<Token> changeTokensParent(Interpreter interpreter){
         List<Token> s = new ArrayList<>();
         for (Token token : this.tokens){
@@ -174,10 +176,12 @@ public class TokenManager {
         return tokens.get(pos);
     }
 
+    /// Returns every token
     public List<Token> getAll(){
         return tokens;
     }
 
+    /// Returns the number of tokens
     public int length(){
         return tokens.toArray().length;
     }

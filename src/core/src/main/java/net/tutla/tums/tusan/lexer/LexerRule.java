@@ -66,8 +66,11 @@ import net.tutla.tums.tusan.lexer.util.prebuilt.PrebuiltTusanTokenGroup;
 /// @tums.title Lexer Rules
 /// @tums.summary How to create lexer rules in Tums
 public class LexerRule {
+    /// The token type this rule makes
     public final TokenType type;
+    /// The regex this rule matches
     public final String regex;
+    /// The group the token is in, `NONE` unless set with `setGroup`
     public TokenGroup group= PrebuiltTusanTokenGroup.NONE;
 
     /// Creates a rule that turns text matching the regex into a token of this type
@@ -82,10 +85,12 @@ public class LexerRule {
         return this;
     }
 
+    /// Returns the token type this rule makes
     public TokenType type(){
         return type;
     }
 
+    /// Returns the regex this rule matches
     public String regex(){
         return regex;
     }

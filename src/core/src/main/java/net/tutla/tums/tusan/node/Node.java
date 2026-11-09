@@ -98,9 +98,12 @@ import java.lang.reflect.InvocationTargetException;
 /// @tums.title Node
 /// @tums.summary Node creation in Tums
 public class Node {
+    /// The interpreter running this node
     public Interpreter interpreter;
+    /// The [context](https://wiki.tutla.net/tums/developer/context) this node was created with
     public TusanContext ctx;
     private NodeConfig nodeConf = new NodeConfig();
+    /// The token that was current when this node was created
     public Token token;
 
     /// Creates the node at the current token. Every node needs a constructor taking its context
@@ -120,10 +123,12 @@ public class Node {
         nodeConf = conf;
     }
 
+    /// Does nothing by default. Override it to check your node before it runs
     public void verify(){
 
     }
 
+    /// Runs the node: a category node runs the node mapped to the current token, any other node calls `create()` unless its `NodeConfig` says to use a custom implementation
     public Node run(){
         boolean runCreate = true;
         if (nodeConf.isCategory()){

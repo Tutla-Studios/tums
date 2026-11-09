@@ -231,10 +231,12 @@ public class Tusan {
         statementTokenGroupNodeMap.add(tokenGroup, node);
     }
 
+    /// Returns the token types linked to nodes with `linkNodeToStatement`
     public Token2NodeMap getStatementTokenNodeMap(){
         return statementTokenNodeMap;
     }
 
+    /// Returns the token groups linked to nodes with `linkNodeToStatement`
     public TokenGroup2NodeMap getStatementTokenGroupNodeMap(){
         return statementTokenGroupNodeMap;
     }
@@ -259,6 +261,7 @@ public class Tusan {
 
     // ---------------------------------------------------------------- compiling
 
+    /// Runs the main statement loop over the interpreter's tokens. Called by `Interpreter.compile()`
     public void compile(TusanContext ctx){
         if (!ctx.isFunction){
             System.out.println("================ OUTPUT ===============");
@@ -290,6 +293,7 @@ public class Tusan {
         ctx.interpreter.meetEnd();
     }
 
+    /// Returns the lexer rules of this language
     public TusanLanguageRules getLang(){
         return lang;
     }

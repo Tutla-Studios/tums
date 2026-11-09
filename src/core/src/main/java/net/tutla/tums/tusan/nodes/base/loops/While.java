@@ -7,6 +7,15 @@ import net.tutla.tums.tusan.lexer.util.prebuilt.PrebuiltTusanTokenType;
 import net.tutla.tums.tusan.nodes.base.Statement;
 import net.tutla.tums.tusan.nodes.expression.Expression;
 
+/// ## While Loop
+///
+/// ```lua
+/// while [condition] do
+/// ...
+/// end
+/// ```
+///
+/// It will execute the code below it if the condition is true infinitly until the condition becomes false
 public class While extends Node {
     public int currentPos;
     public int endPos;

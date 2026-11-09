@@ -7,6 +7,14 @@ import net.tutla.tums.tusan.lexer.util.prebuilt.PrebuiltTusanTokenType;
 
 import java.util.Map;
 
+/// - Variables are like boxes, they store things. You can read `set` in `effects` to see how to declare one.
+/// - Variables can also have *properties*. You can declare/call a property by saying `IDENTIFIER's IDENTIFIER`
+///   - The first identifier is the name of the variable to which property you are going to set and the second on is the name of the property
+///
+/// - [variable name] is either a property (read the second point above) or a variable ( `IDENTIFIER` )
+///
+/// @tums.title Variables
+/// @tums.summary How to use variables in tums
 public class Name extends Node {
     public static String name;
     public Object value;

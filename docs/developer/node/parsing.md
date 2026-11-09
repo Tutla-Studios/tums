@@ -64,14 +64,18 @@ Generally if you want to compute an expression, just use an `ExpressionNode`. It
 
 The token manager lets you access the tokens in the current context. You can access it via `ctx.getInterpreter().tokenManager`. It has many features to access tokens:
 
+- `TokenManager(Interpreter interpreter)` - Creates a token manager for an interpreter. Every interpreter already has one in `interpreter.tokenManager`
 - `getNextToken()` - Gets next token without consuming it
 - `getCurrentToken()` - Gets the current token
 - `nextToken()` - Returns the next token and consumes it
 - `expectTokenType(TokenType token)` - Expect the next token to be of a specific type (not group). If it doesn't match it calls an error
 - `expectToken(TokenType token, String name)` - Expect a token as is, if it doesnt match it calls an error
+- `expectTokenClassic(String tokenTypes)` - Expect the next token to match one of the `|` separated options, each a token type like `IDENTIFIER` or a value like `KEYWORD:item`. If none match it calls an error
+- `setTokens(List<Token> tokens)` - Replaces the list of tokens
+- `changeTokensParent(Interpreter interpreter)` - Moves the tokens and this token manager over to another interpreter
 - `get(int pos)` - Get token at position
+- `getAll()` - Returns every token
+- `length()` - Returns the number of tokens
 - `getPos()` - Returns current position
-
-*It does include other features but these are the important/useful ones*
 
 From here all you do is read the `value` of the tokens, and just keep parsing with the features in the TokenManager.

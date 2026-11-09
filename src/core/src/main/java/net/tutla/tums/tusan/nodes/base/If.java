@@ -6,6 +6,22 @@ import net.tutla.tums.tusan.lexer.Token;
 import net.tutla.tums.tusan.lexer.util.prebuilt.PrebuiltTusanTokenType;
 import net.tutla.tums.tusan.nodes.expression.Expression;
 
+/// ```lua
+/// if [condition] then
+/// ...
+/// elseif [conditon] then
+/// ...
+/// else
+/// ...
+/// end
+/// ```
+///
+/// - The Statement checks if the [condition](https://wiki.tutla.net/tums/scripting/basic/expressions) is true, if it is  it will then execute the code after then, if it is false then the Interpreter skips it and goes to `elseif`, `else` or `end`.
+/// - Else & Elseif are not necessary, they are fall backs to the if statement. If the if statement is false it will then skip and execute all the elseif statements ( there can be infinite elseif statements ) until one is right or it could reach an else if an elseif is not present and it will execute it.
+/// - `end` Closes the structure
+///
+/// @tums.title If Statements
+/// @tums.summary How to use if statements in tums
 public class If extends Node {
     public Expression condition;
     public Boolean end = false;

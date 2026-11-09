@@ -12,12 +12,14 @@ The `TusanContext` gives context to the current state of the parser. It contains
 
 It has the following methods:
 
+- `TusanContext(Interpreter interpreter)` - Creates a context for an interpreter
 - `getCurrentToken()` - Gets the current token
 - `getPos()` - Returns current position
 - `getNextToken()` - Gets next token without consuming it
 - `nextToken()` - Returns the next token and consumes it
 - `getInterpreter()` - Returns current [interpreter](/tums/developer/interpreter)
 - `getTusan()` - Returns the current language
+- `setEnvironment(MinecraftEnvironment env)` - Sets the environment the script is executing in
 - `getEnvironment()` - Returns the current environment of where the script is executing -> `CLIENT|SERVER`
 
 ## Creating your own context
@@ -37,3 +39,10 @@ public class CustomContext extends TusanContext  {
 ```
 
 Make sure to call `interpreter.setContext(context)` before calling `interpreter.compile()`. This only works if you're the one compiling the script, doesn't work with addons *for now*.
+
+## Fields
+
+- `Interpreter interpreter` - The interpreter this context belongs to
+- `TokenManager tokenContext` - The interpreter's token manager, read about it in [Parsing](/tums/developer/node/parsing)
+- `boolean isFunction` - Whether this context is running a function's body
+- `MinecraftEnvironment environment` - The environment the script is executing in, `SERVER` by default

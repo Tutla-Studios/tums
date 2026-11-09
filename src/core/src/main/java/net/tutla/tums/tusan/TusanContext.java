@@ -32,12 +32,17 @@ import net.tutla.tums.tusan.lexer.Token;
 /// @tums.title TusanContext
 /// @tums.summary Context for parsing in tums
 public class TusanContext {
+    /// The interpreter this context belongs to
     public Interpreter interpreter;
+    /// The interpreter's token manager, read about it in [Parsing](https://wiki.tutla.net/tums/developer/node/parsing)
     public TokenManager tokenContext;
+    /// Whether this context is running a function's body
     public boolean isFunction;
 
+    /// The environment the script is executing in, `SERVER` by default
     public MinecraftEnvironment environment = MinecraftEnvironment.SERVER;
 
+    /// Creates a context for an interpreter
     public TusanContext(Interpreter interpreter){
         this.interpreter = interpreter;
         this.tokenContext = interpreter.tokenManager;
@@ -75,6 +80,7 @@ public class TusanContext {
         return interpreter.getTusan();
     }
 
+    /// Sets the environment the script is executing in
     public void setEnvironment(MinecraftEnvironment env){
         this.environment = env;
     }

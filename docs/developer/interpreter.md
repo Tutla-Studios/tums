@@ -63,7 +63,25 @@ public static void runScript(Path script, Tusan tusan, MinecraftEnvironment envi
 - `compile()` - Runs the script
 - `setContext(TusanContext ctx)` - Uses a custom [context](/tums/developer/context) instead of the default one
 - `error(String name, String detail, List<String> notes)` - Reports an error with the position it happened at, and stops the script
+- `arrowsAtPosition()` - Returns the code around the current position, with arrows pointing at the current token. Used by `error`
+- `readFileContents(Path path)` - Reads a whole script file
+- `meetEnd()` - Marks the script as finished, so nothing after the current token runs
 - `clone()` - Returns a new interpreter set up with the same data and tokens
+- `setLanguage(TusanLanguageRules lang)` - Replaces the lexer rules this interpreter reads the script with
 - `getTusan()` - Returns the language this interpreter runs
 - `getCompileEnvironment()` - Returns the environment the script runs in
 - `setCompileEnvironment(MinecraftEnvironment env)` - Sets the environment the script runs in, `SERVER` when `null`
+
+## Fields
+
+- `Utils util` - Helpers for working with values and identifiers
+- `InterpreterData data` - All the data the script has made: variables, functions, events, etc
+- `TokenManager tokenManager` - The token manager, read about it in [Parsing](/tums/developer/node/parsing)
+- `String text` - The script's code
+- `String file` - The absolute path of the script file, or `<stdin>` when running code from a string
+- `Object returned` - The value a `return` gave back, when running a function
+- `Boolean isFunction` - Whether this interpreter is running a function's body
+- `Boolean end` - Whether the script has finished
+- `Boolean caughtError` - Whether an error has been reported
+- `int pos` - The position of the current token
+- `Token currentToken` - The current token
