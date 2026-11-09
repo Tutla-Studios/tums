@@ -38,23 +38,28 @@ This is the atom of TuSK. A Factor takes in a `NUMBER`, `STRING`, `BOOL`, `TYPE`
 
 ## Term
 
-A Term could be a [factor] or a `[factor] (/|*|^|%|) [factor]`:
+A Term could be a [factor] or a `[factor] (*|/|%) [factor]`:
 
 - [factor] (Look at the previous heading, everything under there comes here even expressions because of parenthesis)
 - [factor] * [factor]: Multiplication
 - [factor] / [factor]: Division
-- [factor] ^ [factor] or [factor] % [factor]
+- [factor] % [factor]: Remainder
+- [factor] ^ [factor] or [factor] ** [factor]: Power, worked out before `*`, `/` and `%`
+
+Operators of the same kind are worked out left to right, so `8 / 2 / 2` is `2`. Powers are the exception and go right to left, like in maths: `2 ^ 3 ^ 2` is `2 ^ 9`. A minus in front applies to the whole power, so `-2 ^ 2` is `-4`.
 
 ## Expression
 
 Expressions are used everywhere in the language, they could be a:
 
 - [term]
-- [term] + [expression]
-- [term] - [expression]
-- [term] COMAPARISON [expression]
-  - COMPARISION could be is, >, < =, ==, !=
+- [term] + [term]
+- [term] - [term]
+- [expression] COMPARISON [expression]
+  - COMPARISON could be is, >, <, >=, <=, ==, !=
   - returns a boolean (true/false)
+
+They are worked out left to right, so `10 - 2 - 3` is `5`, and the maths comes before the comparison, so `n + 1 == 3` compares `n + 1` with `3`.
 
 ## Condition
 
@@ -68,3 +73,5 @@ Conditions return true or false depending on what you give them
   - [expression] `or` [expression]: returns true if either are true
   - [expression] contains [expression]: returns true if expression2 is in expression1
   - [expression] in [expression]: returns true if expression1 is in expression2
+
+`not` comes before `and`, and `and` before `or`, so `not a or b and c` means `(not a) or (b and c)`. Use brackets to group them any other way.

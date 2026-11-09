@@ -43,7 +43,7 @@ public class Factor extends Node {
         value = token.value;
         if (token.type == PrebuiltTusanTokenType.OPERATOR && "-".equals(token.value)) {
             interpreter.tokenManager.nextToken();
-            Object operand = new Factor(ctx).create().value;
+            Object operand = new Power(ctx).create().value; // -2 ^ 2 is -(2 ^ 2), as in maths
             if (!(operand instanceof Number)){
                 interpreter.error("TypeError", "Expected a number after '-'", null);
                 return this;
