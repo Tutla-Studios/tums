@@ -64,7 +64,7 @@ public class Utils {
     }
 
     public Boolean isValidIdentifier(String value, Interpreter interpreter){
-        return interpreter.data.vars.containsKey(value) || interpreter.data.funcs.containsKey(value);
+        return interpreter.data.hasVar(value) || interpreter.data.funcs.containsKey(value);
     }
 
     /// The text of a string literal: the token as the lexer read it, with its quotes taken off and its

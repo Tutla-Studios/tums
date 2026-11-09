@@ -105,7 +105,7 @@ public class Factor extends Node {
                 } else {
                     value = String.valueOf(((String) list).charAt(n));
                 }
-            } else if (interpreter.data.vars.containsKey(token.value)){
+            } else if (interpreter.data.hasVar(token.value)){
                 value = new Name(ctx).create().value;
             } else if (interpreter.data.funcs.containsKey(token.value)){
                 value = new ExecuteFunction(ctx).create().value;

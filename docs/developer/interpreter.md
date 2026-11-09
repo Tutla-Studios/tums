@@ -62,7 +62,7 @@ public static void runScript(Path script, Tusan tusan, MinecraftEnvironment envi
 - `setup(InterpreterData data, TokenManager tknmanager, String _text, Path file, MinecraftEnvironment env)` - Prepares the interpreter to run a script. Any argument can be `null`
 - `compile()` - Runs the script
 - `setContext(TusanContext ctx)` - Uses a custom [context](/tums/developer/context) instead of the default one
-- `error(String name, String detail, List<String> notes)` - Reports an error with the position it happened at, and stops the script
+- `error(String name, String detail, List<String> notes)` - Reports an error with the position it happened at, and stops the script by throwing a `ScriptError`, which `compile()` catches
 - `arrowsAtPosition()` - Returns the code around the current position, with arrows pointing at the current token. Used by `error`
 - `readFileContents(Path path)` - Reads a whole script file
 - `meetEnd()` - Marks the script as finished, so nothing after the current token runs

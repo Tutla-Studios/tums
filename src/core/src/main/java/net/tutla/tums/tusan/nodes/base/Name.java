@@ -16,7 +16,7 @@ import java.util.Map;
 /// @tums.title Variables
 /// @tums.summary How to use variables in tums
 public class Name extends Node {
-    public static String name;
+    public String name;
     public Object value;
     public Map<String, Variable> location = interpreter.data.vars;
     public Name(TusanContext ctx){
@@ -25,6 +25,9 @@ public class Name extends Node {
 
     public Name create() { // fuck ass logic made me take 1 hour to understand
         name = token.value;
+        // the scope that already has this variable, so set updates it there; a new one goes in this scope
+        Map<String, Variable> scope = interpreter.data.scopeOf(name);
+        if (scope != null) location = scope;
         if (interpreter.tokenManager.getNextToken().type == PrebuiltTusanTokenType.PROPERTY) {
             if (!(location.get(name) instanceof Variable holder)) {
                 interpreter.error("UndefinedVariable", name + " was not defined, so it has no properties", null);

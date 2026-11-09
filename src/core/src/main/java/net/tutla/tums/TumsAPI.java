@@ -91,6 +91,16 @@ public class TumsAPI {
 
     /// Compiles and runs a single script, then registers its data. See [Interpreter](https://wiki.tutla.net/tums/developer/interpreter)
     public static void runScript(Path script, Tusan tusan, MinecraftEnvironment environment){
+        synchronized (LOCK) {
+            runScriptLocked(script, tusan, environment);
+        }
+    }
+
+    // Scripts load on the game's thread while events fire from the render and server threads, all against
+    // the same script data: one at a time, so they never change it under each other
+    private static final Object LOCK = new Object();
+
+    private static void runScriptLocked(Path script, Tusan tusan, MinecraftEnvironment environment){
         Interpreter interpreter = new Interpreter(tusan);
         interpreter.setup(null,null,null, script, environment);
 
@@ -110,12 +120,22 @@ public class TumsAPI {
         if (variables == null){
             variables = new HashMap<>();
         }
-        for (Interpreter executor : callback){
-            Interpreter exec  = executor.clone();
-            exec.setCompileEnvironment(env);
-            exec.tokenManager.changeTokensParent(exec);
-            exec.data.vars.putAll(variables);
-            exec.compile(); // the clone, which is the one set up for this event
+        synchronized (LOCK) {
+            for (Interpreter executor : callback){
+                Interpreter exec  = executor.clone();
+                exec.setCompileEnvironment(env);
+                exec.tokenManager.changeTokensParent(exec);
+                // a scope of its own: event_player and friends stay in this run, the script's variables
+                // can still be read and set
+                exec.data = executor.data.child();
+                exec.data.vars.putAll(variables);
+                try {
+                    exec.compile(); // the clone, which is the one set up for this event
+                } catch (Exception e) {
+                    // a bug in Tums must not crash the game from inside its input or server hooks
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }

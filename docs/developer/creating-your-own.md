@@ -73,40 +73,30 @@ public class Statement extends Node {
     public Statement(TusanContext ctx){
         super(ctx);
     }
-    public Object create(){
 
-        Object value = false;
+    public Object create(){
         if (interpreter.end){
             return false;
         }
 
-        if (Arrays.asList(PrebuiltTusanTokenType.IDENTIFIER, PrebuiltTusanTokenType.LEFT_CURLY, PrebuiltTusanTokenType.NUMBER, PrebuiltTusanTokenType.STRING, PrebuiltTusanTokenType.KEYWORD).contains(token.type)){ // not necessary but you can use this
-                value = new Expression(ctx).create();
-
-            if (token.group == PrebuiltTusanTokenType.EFFECT){
-                value = new Effect(ctx).create(); // example of a group node usage
-            } else if (token.group == PrebuiltTusanTokenGroup.STRUCTURE){
-                AtomicBoolean execed = new AtomicBoolean(false);
-                ctx.getTusan().getStatementNodeMap().getTokenMap()
-                        .forEach((tok, node) -> {
-                            if (token.type == tok){
-                                // THIS SECTION IS NEEDED IF YOUR USING NODE CONFIGS
-                                Node newNode = Node.instantiateNode(node, ctx);
-                                if(!newNode.getNodeConfig().isDontSendNext()) {
-                                    ctx.nextToken();
-                                }
-                                newNode.run(ctx);
-                                execed.set(true);
-                            }
-                });
-                if (!execed.get()){
-                    interpreter.error("UnexpectedToken", "Structure " + token.type.name() + ":" + token.value + " has no definition", null);
-                }
-            } else if (Arrays.asList(PrebuiltTusanTokenType.IDENTIFIER, PrebuiltTusanTokenType.LEFT_CURLY, PrebuiltTusanTokenType.NUMBER, PrebuiltTusanTokenType.STRING, PrebuiltTusanTokenType.KEYWORD).contains(token.type)){ // running expressions at statement level allow "in-built" functions
-                value = new Expression(ctx).create();
+        Object value = false;
+        if (token.group == PrebuiltTusanTokenGroup.STRUCTURE){
+            Class<? extends Node> node = ctx.getTusan().getStatementTokenNodeMap().getTokenMap().get(token.type);
+            if (node == null){
+                interpreter.error("UnexpectedToken", "Structure " + token.type.name() + ":" + token.value + " has no definition", null);
             }
+            // THIS SECTION IS NEEDED IF YOUR USING NODE CONFIGS
+            Node newNode = Node.instantiateNode(node, ctx);
+            if (!newNode.getNodeConfig().isDontSendNext()) {
+                ctx.nextToken();
+            }
+            newNode.run();
+        } else if (token.group == PrebuiltTusanTokenGroup.EFFECT){
+            value = new Effect(ctx).run(); // example of a group node usage
         } else if (token.type == PrebuiltTusanTokenType.BREAKSTRUCTURE && token.value.equals("return")){
             new Return(ctx).create(); // you could implement your own
+        } else if (Arrays.asList(PrebuiltTusanTokenType.IDENTIFIER, PrebuiltTusanTokenType.LEFT_CURLY, PrebuiltTusanTokenType.NUMBER, PrebuiltTusanTokenType.STRING, PrebuiltTusanTokenType.KEYWORD).contains(token.type)){ // running expressions at statement level allow "in-built" functions
+            value = new Expression(ctx).create();
         } else {
             interpreter.error("UnexpectedToken", "Expected valid statement got "+token.type.name()+":"+token.value, null);
         }

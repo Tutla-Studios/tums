@@ -61,9 +61,12 @@ public class If extends Node {
                 }
             } else if ((nxt.type == PrebuiltTusanTokenType.KEYWORD && nxt.value.equals("elseif")) && structures == 0) {
                 interpreter.tokenManager.nextToken();
-                if (!runIf && !stopped){
+                if (!runIf && !success && !stopped){ // once a branch was taken, later elseifs are skipped
                     interpreter.tokenManager.nextToken();
                     condition = new Expression(ctx).create();
+                    if (!(condition.value instanceof Boolean)){
+                        interpreter.error("TypeError", "Evaluated expression must return a boolean output", null);
+                    }
                     if ((boolean) condition.value){
                         interpreter.tokenManager.expectToken(PrebuiltTusanTokenType.KEYWORD, "then");
                         runIf = true;

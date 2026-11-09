@@ -166,7 +166,14 @@ public class Interpreter {
         if (compileEnvironment == MinecraftEnvironment.CLIENT){
             ctx.setEnvironment(MinecraftEnvironment.CLIENT);
         }
-        tusan.compile(ctx);
+        try {
+            tusan.compile(ctx);
+        } catch (ScriptError e) {
+            // the error is printed already. A function passes it on, so the script that called it stops too
+            if (isFunction) throw e;
+            end = true;
+            caughtError = true;
+        }
     }
 
     /// Uses a custom [context](https://wiki.tutla.net/tums/developer/context) instead of the default one
@@ -179,7 +186,7 @@ public class Interpreter {
 
 
 
-    /// Reports an error with the position it happened at, and stops the script
+    /// Reports an error with the position it happened at, and stops the script by throwing a `ScriptError`, which `compile()` catches
     public void error(String name, String detail, List<String> notes){
         if (!caughtError){
             System.out.println("================ ERROR ================");
@@ -196,6 +203,7 @@ public class Interpreter {
             meetEnd();
         }
         caughtError = true;
+        throw new ScriptError(name, detail); // stop right here: nothing else on the line or in the script runs
     }
 
     /// Returns the code around the current position, with arrows pointing at the current token. Used by `error`
@@ -209,13 +217,8 @@ public class Interpreter {
             if (npos >= pos-2 && npos <= pos+4){
                 String tokenStr;
                 int width;
-                if (i.type == PrebuiltTusanTokenType.STRING){
-                    tokenStr = " \"" + i.value + "\"";
-                    width = i.value.length() + 3;
-                } else {
-                    tokenStr = " "+i.value;
-                    width = i.value.length()+1;
-                }
+                tokenStr = " "+i.value; // a string token keeps its own quotes
+                width = i.value.length()+1;
 
                 recreated.append(tokenStr);
                 String tt;

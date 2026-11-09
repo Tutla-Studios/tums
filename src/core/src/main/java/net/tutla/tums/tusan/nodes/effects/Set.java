@@ -35,9 +35,7 @@ public class Set extends Node {
         } else {
             Name n = new Name(ctx).create();
             if (interpreter.caughtError) return this;
-            // read these now: Name.name is static, so evaluating the value below (which may read other
-            // variables) would change it before it is used
-            String target = Name.name;
+            String target = n.name;
             Map<String, Variable> location = n.location;
 
             interpreter.tokenManager.expectToken(PrebuiltTusanTokenType.KEYWORD,"to");
