@@ -1,0 +1,10 @@
+print "[T] function start"
+function addnumbers(num1, num2):
+    return num1 + num2
+end
+print addnumbers(3, 2)
+function noreturn():
+    print "inside noreturn"
+end
+print noreturn()
+print "[T] function ok"

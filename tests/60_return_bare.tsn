@@ -1,0 +1,7 @@
+print "[T] return_bare start"
+function g():
+    print "in g"
+    return
+end
+print g()
+print "[T] return_bare ok"

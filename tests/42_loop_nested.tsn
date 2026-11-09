@@ -1,0 +1,7 @@
+print "[T] loop_nested start"
+loop 2 times as i
+    loop 2 times as j
+        print j
+    end
+end
+print "[T] loop_nested ok"

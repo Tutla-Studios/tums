@@ -1,0 +1,8 @@
+print "[T] return_in_while_in_function start"
+function f():
+    while true do
+        return "left the while"
+    end
+end
+print f()
+print "[T] return_in_while_in_function ok"

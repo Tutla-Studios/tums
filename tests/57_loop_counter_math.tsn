@@ -1,0 +1,6 @@
+print "[T] loop_counter_math start"
+loop 2 times as i
+    print i + 1
+    print i == 0
+end
+print "[T] loop_counter_math ok"

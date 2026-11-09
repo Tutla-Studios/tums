@@ -1,0 +1,3 @@
+print "[T] curly start"
+{ print "inside curly" }
+print "[T] curly ok"

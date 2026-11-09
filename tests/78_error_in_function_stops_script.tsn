@@ -1,0 +1,7 @@
+# expect error
+print "[T] error_in_function_stops_script start"
+function f():
+    print nope
+end
+f()
+print "wrong: script went on after the function's error"

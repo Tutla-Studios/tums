@@ -1,0 +1,12 @@
+print "[T] return_in_loop_in_function start"
+function find(l, target):
+    loop all items in l as x
+        if x == target then
+            return "found " + x
+        end
+    end
+    return "not found"
+end
+print find(["a", "b", "c"], "b")
+print find(["a"], "z")
+print "[T] return_in_loop_in_function ok"

@@ -1,0 +1,4 @@
+# expect error
+print "[T] set_undefined_property start"
+set nope's size to 1
+print "[T] set_undefined_property ok"

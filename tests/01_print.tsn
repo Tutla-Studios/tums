@@ -1,0 +1,6 @@
+print "[T] print start"
+print "a string"
+print 42
+print true
+print nothing
+print "[T] print ok"

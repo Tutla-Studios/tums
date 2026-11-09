@@ -1,0 +1,5 @@
+# expect error
+print "[T] params_missing_colon start"
+function f(a)
+    return a
+end

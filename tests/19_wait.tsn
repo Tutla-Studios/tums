@@ -1,0 +1,3 @@
+print "[T] wait start"
+wait 1
+print "[T] wait ok"

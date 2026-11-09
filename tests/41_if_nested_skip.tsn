@@ -1,0 +1,10 @@
+print "[T] if_nested_skip start"
+if false then
+    if true then
+        print "wrong: inner if ran"
+    end
+    print "wrong: outer body ran"
+else
+    print "else taken"
+end
+print "[T] if_nested_skip ok"

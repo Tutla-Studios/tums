@@ -1,0 +1,13 @@
+print "[T] elseif_chain start"
+if false then
+    print "wrong: if"
+elseif true then
+    print "first elseif"
+elseif true then
+    print "wrong: second elseif"
+elseif true then
+    print "wrong: third elseif"
+else
+    print "wrong: else"
+end
+print "[T] elseif_chain ok"

@@ -1,0 +1,4 @@
+print "[T] return_top_level start"
+print "[T] return_top_level ok"
+return 1
+print "wrong: ran after return"

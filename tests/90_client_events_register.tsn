@@ -1,0 +1,13 @@
+# fabric neoforge
+# only clients have these inputs, so this test is not copied to paper
+print "[T] client_events_register start"
+on key_press
+    print "[T] client_events_register key: " + event_key
+end
+on scroll_up
+    print "[T] client_events_register scrolled up"
+end
+on middle_click
+    print "[T] client_events_register middle click"
+end
+print "[T] client_events_register ok"

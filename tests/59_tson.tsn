@@ -1,0 +1,3 @@
+print "[T] tson start"
+print {"name": "tums", size: 2}
+print "[T] tson ok"

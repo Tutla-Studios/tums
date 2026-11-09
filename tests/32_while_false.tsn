@@ -1,0 +1,5 @@
+print "[T] while_false start"
+while false do
+    print "wrong: while body ran"
+end
+print "[T] while_false ok"

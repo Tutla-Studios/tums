@@ -1,0 +1,8 @@
+# expect error
+print "[T] function_local_stays_local start"
+function g():
+    set tmp to 1
+    return tmp
+end
+print g()
+print tmp

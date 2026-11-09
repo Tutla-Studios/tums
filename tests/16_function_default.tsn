@@ -1,0 +1,6 @@
+print "[T] function_default start"
+function greet(name = "world"):
+    return "hello " + name
+end
+print greet()
+print "[T] function_default ok"

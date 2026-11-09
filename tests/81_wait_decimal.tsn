@@ -1,0 +1,3 @@
+print "[T] wait_decimal start"
+wait 0.5
+print "[T] wait_decimal ok"

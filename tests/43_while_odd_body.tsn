@@ -1,0 +1,5 @@
+print "[T] while_odd_body start"
+while false do
+    print -5
+end
+print "[T] while_odd_body ok"

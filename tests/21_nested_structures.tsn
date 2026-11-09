@@ -1,0 +1,9 @@
+print "[T] nested_structures start"
+loop 2 times as i
+    if i > 0 then
+        print "i is above 0"
+    else
+        print "i is 0"
+    end
+end
+print "[T] nested_structures ok"

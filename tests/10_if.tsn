@@ -1,0 +1,17 @@
+print "[T] if start"
+if 1 > 2 then
+    print "wrong: if"
+elseif 2 > 1 then
+    print "elseif taken"
+else
+    print "wrong: else"
+end
+if false then
+    print "wrong: if"
+else
+    print "else taken"
+end
+if true then
+    print "if taken"
+end
+print "[T] if ok"

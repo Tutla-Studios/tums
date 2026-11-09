@@ -1,0 +1,6 @@
+print "[T] lists_brackets start"
+print ["bats", "balls"]
+print ["bats", "balls"] contains "balls"
+print "balls" in ["bats", "balls"]
+print []
+print "[T] lists_brackets ok"

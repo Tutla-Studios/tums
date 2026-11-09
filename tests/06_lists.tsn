@@ -1,0 +1,5 @@
+print "[T] lists start"
+print ["bats", "balls", "wickets"]
+print ["bats", "balls"] contains "balls"
+print "balls" in ["bats", "balls"]
+print "[T] lists ok"

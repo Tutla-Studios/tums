@@ -1,0 +1,6 @@
+print "[T] wait_in_loop start"
+loop 1 times as i
+    wait 0
+    print i
+end
+print "[T] wait_in_loop ok"

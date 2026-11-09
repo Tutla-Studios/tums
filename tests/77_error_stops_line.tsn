@@ -1,0 +1,4 @@
+# expect error
+print "[T] error_stops_line start"
+print nope
+print "wrong: ran after the error"

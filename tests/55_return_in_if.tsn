@@ -1,0 +1,10 @@
+print "[T] return_in_if start"
+function f(n):
+    if n > 0 then
+        return "positive"
+    end
+    return "not positive"
+end
+print f(1)
+print f(0)
+print "[T] return_in_if ok"

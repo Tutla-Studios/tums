@@ -1,0 +1,5 @@
+# a whole line comment
+print "[T] comments start"   # a comment after code
+print "a # inside a string is text"
+# print "wrong: a commented out line ran"
+print "[T] comments ok"

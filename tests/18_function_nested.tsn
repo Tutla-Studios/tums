@@ -1,0 +1,9 @@
+print "[T] function_nested start"
+function inc(a):
+    return a + 1
+end
+function twice(a):
+    return inc(inc(a))
+end
+print twice(1)
+print "[T] function_nested ok"

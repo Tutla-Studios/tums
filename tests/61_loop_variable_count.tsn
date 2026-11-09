@@ -1,0 +1,9 @@
+print "[T] loop_variable_count start"
+set n to 3
+loop n times as i
+    print i
+end
+loop n - 1 times
+    print loop_item
+end
+print "[T] loop_variable_count ok"

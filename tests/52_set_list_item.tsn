@@ -1,0 +1,6 @@
+print "[T] set_list_item start"
+set l to ["a", "b", "c"]
+set 2nd item in l to "z"
+print l
+print 2nd item in l
+print "[T] set_list_item ok"

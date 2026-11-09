@@ -1,0 +1,6 @@
+print "[T] strings start"
+print "say \"hi\""
+print 'single'
+print "a" == "a"
+print {"k": "v"}
+print "[T] strings ok"

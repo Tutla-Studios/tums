@@ -1,0 +1,4 @@
+# expect error
+print "[T] break_outside_loop start"
+break
+print "wrong: ran after error"

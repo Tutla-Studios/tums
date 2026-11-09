@@ -1,0 +1,3 @@
+print "[T] negative start"
+print -5 + 2
+print "[T] negative ok"

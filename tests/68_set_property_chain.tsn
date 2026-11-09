@@ -1,0 +1,6 @@
+print "[T] set_property_chain start"
+set box to 1
+set box's size to 10
+set box's size to box's size + 5
+print box's size
+print "[T] set_property_chain ok"

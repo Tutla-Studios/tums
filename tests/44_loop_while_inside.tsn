@@ -1,0 +1,8 @@
+print "[T] loop_while_inside start"
+loop 2 times as i
+    while false do
+        print "wrong: while body ran"
+    end
+    print i
+end
+print "[T] loop_while_inside ok"

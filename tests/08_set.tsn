@@ -1,0 +1,4 @@
+print "[T] set start"
+set x to 5
+print x
+print "[T] set ok"

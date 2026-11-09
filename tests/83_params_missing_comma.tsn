@@ -1,0 +1,5 @@
+# expect error
+print "[T] params_missing_comma start"
+function f(a b):
+    return a
+end

@@ -1,0 +1,6 @@
+# expect error
+print "[T] args_required_by_name start"
+function f(a):
+    return a
+end
+print f(a = 1)

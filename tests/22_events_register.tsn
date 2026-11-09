@@ -1,0 +1,16 @@
+print "[T] events_register start"
+on left_click
+    print "[T] left_click fired"
+end
+on left_release
+    print "[T] left_release fired"
+end
+on attack
+    print "[T] attack fired"
+    print event_entity's name
+    print event_player's health
+end
+on server_start
+    print "[T] server_start fired"
+end
+print "[T] events_register ok"

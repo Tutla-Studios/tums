@@ -1,0 +1,3 @@
+print "[T] time start"
+print 2 minutes
+print "[T] time ok"

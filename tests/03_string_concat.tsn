@@ -1,0 +1,3 @@
+print "[T] string_concat start"
+print "foo" + "bar"
+print "[T] string_concat ok"

@@ -1,0 +1,10 @@
+print "[T] break_while start"
+set n to 0
+while true do
+    set n to n + 1
+    if n == 3 then
+        break
+    end
+end
+print n
+print "[T] break_while ok"

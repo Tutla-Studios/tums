@@ -1,0 +1,16 @@
+print "[T] event_function_scope start"
+set count to 0
+function inc():
+    set count to count + 1
+    return count
+end
+on server_start
+    print "[T] event_function_scope function in an event changes the run's copy (1.0):"
+    print inc()
+end
+on server_start
+    wait 0.5
+    print "[T] event_function_scope other run still at 0 (0.0):"
+    print count
+end
+print "[T] event_function_scope ok"

@@ -21,6 +21,9 @@ public class TusanLanguageRules { // this is the syntax register
             if (!sb.isEmpty()) sb.append("|");
             sb.append("(?<G").append(i).append(">(?:").append(rule.regex()).append("))");
         }
+        // a comment runs from # to the end of the line. Strings are matched from their opening quote by
+        // their own rule, so a # inside a string stays part of it
+        sb.append("|(?<COMMENT>#[^\\r\\n]*)");
         sb.append("|(?<IDENTIFIER>[A-Za-z_][A-Za-z0-9_]*)");
         sb.append("|(?<WHITESPACE>[ \\t\\r\\n]+)");
         return Pattern.compile(sb.toString());

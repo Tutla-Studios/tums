@@ -1,0 +1,4 @@
+print "[T] ordinal start"
+print 3rd item in ["javascript", "python", "kungfu"]
+print 2nd character in "hey"
+print "[T] ordinal ok"

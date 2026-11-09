@@ -1,0 +1,6 @@
+# expect error
+print "[T] args_unknown_name start"
+function greet(name = "world"):
+    return name
+end
+print greet(nope = 1)

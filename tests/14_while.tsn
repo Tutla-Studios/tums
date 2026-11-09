@@ -1,0 +1,7 @@
+print "[T] while start"
+set n to 0
+while n < 3 do
+    print n
+    set n to n + 1
+end
+print "[T] while ok"

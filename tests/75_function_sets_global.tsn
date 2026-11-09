@@ -1,0 +1,9 @@
+print "[T] function_sets_global start"
+set count to 0
+function inc():
+    set count to count + 1
+end
+inc()
+inc()
+print count
+print "[T] function_sets_global ok"

@@ -1,0 +1,6 @@
+print "[T] kwarg start"
+function greet(name = "world"):
+    return name
+end
+print greet(name = "tums")
+print "[T] kwarg ok"

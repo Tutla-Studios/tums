@@ -1,0 +1,6 @@
+# expect error
+print "[T] args_missing_required start"
+function f(a, b):
+    return a
+end
+print f(1)

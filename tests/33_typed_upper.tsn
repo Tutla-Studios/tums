@@ -1,0 +1,6 @@
+print "[T] typed_upper start"
+function double(n: NUMBER):
+    return n * 2
+end
+print double(4)
+print "[T] typed_upper ok"

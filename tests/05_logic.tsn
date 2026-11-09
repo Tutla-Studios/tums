@@ -1,0 +1,6 @@
+print "[T] logic start"
+print true and false
+print true or false
+print not false
+print not (1 > 2)
+print "[T] logic ok"

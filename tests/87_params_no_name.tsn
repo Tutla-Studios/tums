@@ -1,0 +1,5 @@
+# expect error
+print "[T] params_no_name start"
+function (a):
+    return a
+end

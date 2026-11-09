@@ -1,0 +1,25 @@
+print "[T] event_scope start"
+set flag to 0
+set box to 1
+set box's size to 1
+set l to ["a"]
+on server_start
+    set flag to 1
+    set box's size to 2
+    set 1st item in l to "changed"
+    wait 1
+    print "[T] event_scope slow handler sees its own changes (1.0, 2.0, changed):"
+    print flag
+    print box's size
+    print 1st item in l
+end
+on server_start
+    wait 0.3
+    print "[T] event_scope fast handler, a run of its own, sees the script as it loaded (0.0, 1.0, a):"
+    print flag
+    print box's size
+    print 1st item in l
+    print "[T] event_scope event_player should be undefined:"
+    print event_player
+end
+print "[T] event_scope ok"

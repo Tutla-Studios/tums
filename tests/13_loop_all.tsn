@@ -1,0 +1,8 @@
+print "[T] loop_all start"
+loop all items in ["a", "b", "c"] as x
+    print x
+end
+loop all characters in "hey" as c
+    print c
+end
+print "[T] loop_all ok"

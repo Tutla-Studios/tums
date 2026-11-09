@@ -1,0 +1,5 @@
+# expect error
+print "[T] params_duplicate start"
+function f(a, a):
+    return a
+end

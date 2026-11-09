@@ -1,0 +1,6 @@
+print "[T] set_rename start"
+set y to 1
+set x to y + 1
+print x
+print y
+print "[T] set_rename ok"

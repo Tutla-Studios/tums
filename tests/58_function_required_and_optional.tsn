@@ -1,0 +1,7 @@
+print "[T] function_required_and_optional start"
+function f(a, b = 2):
+    return a + b
+end
+print f(1)
+print f(1, b = 5)
+print "[T] function_required_and_optional ok"

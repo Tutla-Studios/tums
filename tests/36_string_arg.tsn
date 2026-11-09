@@ -1,0 +1,6 @@
+print "[T] string_arg start"
+function echo(s):
+    return s
+end
+print echo("x")
+print "[T] string_arg ok"

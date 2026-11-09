@@ -84,7 +84,8 @@ public class Lexer {
                     } else {
                         register(PrebuiltTusanTokenType.IDENTIFIER, value, PrebuiltTusanTokenGroup.IDENTIFIER);
                     }
-                } else if (matcher.group("WHITESPACE") != null) {
+                } else if (matcher.group("WHITESPACE") != null || matcher.group("COMMENT") != null) {
+                    // nothing to keep
                 }
             }
         }

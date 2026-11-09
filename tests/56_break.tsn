@@ -1,0 +1,8 @@
+print "[T] break start"
+loop 5 times as i
+    if i == 2 then
+        break
+    end
+    print i
+end
+print "[T] break ok"
