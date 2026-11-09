@@ -1,0 +1,42 @@
+{
+    "github": "https://github.com/TutlaMC/tums",
+    "modrinth": "https://modrinth.com/mod/tums",
+    "website": "https://tutla.net/tums",
+    "faq": {
+        "What is Tums?": "Tums is a Fabric Minecraft mod that simplifies Minecraft mod development by introducing a simple, user-friendly scripting language based on Tusan.",
+        "How do I install Tums?": "Download the latest version from Modrinth, drag the .jar file into your mods folder, and start Minecraft.",
+        "What file extension do Tums scripts use?": "Tums scripts use the .tsn extension and live in [YOUR MINECRAFT FOLDER]/tums/scripts/.",
+        "Can I create my own syntax?": "Yes. Tums is fully open source and ships with API support for adding custom syntax or building your own language on top of it."
+    },
+    "Introduction": "/tums/",
+    "Scripting": {
+        "Getting started": "/tums/scripting",
+        "Basics": {
+            "Expressions": "/tums/scripting/basic/expressions",
+            "Variables": "/tums/scripting/basic/variable",
+            "Effects": "/tums/scripting/basic/effects",
+            "Functions": "/tums/scripting/basic/functions",
+            "Loops": "/tums/scripting/basic/loops",
+            "If Statements": "/tums/scripting/basic/if"
+        },
+        "Events": "/tums/scripting/events",
+        "Types":{
+            "Player": "/tums/scripting/types/player",
+            "Entity": "/tums/scripting/types/entity"
+        }
+    },
+    "Developer": {
+        "Getting started": "/tums/developer",
+        "Nodes": {
+            "Node": "/tums/developer/node",
+            "Parsing": "/tums/developer/node/parsing"
+        },
+        "Context": "/tums/developer/context",
+        "Lexer": {
+            "Rules": "/tums/developer/lexer/rules",
+            "Patterns": "/tums/developer/lexer/patterns"
+        },
+        "Interpreter": "/tums/developer/interpreter",
+        "Creating your own language": "/tums/developer/creating-your-own"
+    }
+}
