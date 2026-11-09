@@ -13,8 +13,8 @@
 #                  from the javadoc of the nodes and types in SCRIPT_PAGES below
 #   sidebar.json   from LINKS, FAQ and PAGES below, for the wiki's github sync to pick up
 #
-#   Everything else in docs/ (scripting/index.md, scripting/events.md) is written by hand and never
-#   touched here. A generated page carries a marker comment under its frontmatter.
+#   Everything else in docs/ is written by hand and never touched here; every run ends by listing
+#   those pages. A generated page carries a marker comment under its frontmatter.
 #
 # A generated page is the markdown javadoc (///) of one class. Its block tags give the frontmatter:
 #
@@ -41,6 +41,15 @@
 #                            updateProperty("name", ...) calls and the /// comment above each one:
 #
 #   - `health` - The player's health
+#
+#   <!-- events -->          is replaced with the constants of an enum, in lower case as scripts write
+#                            them, each with its /// comment. Lines of the comment starting with "- "
+#                            become an indented list under the event, for its variables:
+#
+#   - `attack` - When attacked. Includes both players and mobs.
+#       - `event_player` - You, the player
+#
+#                            An event without a comment stops the build, so none goes undocumented.
 #
 # The README links to the wiki with full urls (https://wiki.tutla.net/tums/...) so they work on github
 # and modrinth. On the wiki itself those are rewritten to site relative links (/tums/...), so the README
@@ -137,7 +146,8 @@ scripting/basic/functions	core/src/main/java/net/tutla/tums/tusan/nodes/base/fun
 scripting/basic/loops	core/src/main/java/net/tutla/tums/tusan/nodes/base/loops/Loop.java
 scripting/basic/if	core/src/main/java/net/tutla/tums/tusan/nodes/base/If.java
 scripting/types/player	common/src/main/java/net/tutla/tums/tums/objects/TumsPlayer.java
-scripting/types/entity	common/src/main/java/net/tutla/tums/tums/objects/TumsEntity.java"
+scripting/types/entity	common/src/main/java/net/tutla/tums/tums/objects/TumsEntity.java
+scripting/events	core/src/main/java/net/tutla/tums/tums/EventType.java"
 
 # ---------------------------------------------------------------------------- writing
 
@@ -318,6 +328,27 @@ jdoc_properties(){
     ' "$1"
 }
 
+# Every constant of an enum, as markdown list lines: "- `name` - <comment>", with the comment's "- " lines
+# indented under it. Fails naming the constant if one has no /// comment.
+jdoc_events(){
+    awk -v f="$1" '
+    /^[ \t]*\/\/\/( |$)/ { line = $0; sub(/^[ \t]*\/\/\/ ?/, "", line); buf[n++] = line; next }
+    /^public enum / { inenum = 1; n = 0; next }
+    inenum && /^    [A-Z_][A-Z0-9_]*[ \t]*(,|;|\(|$|\/\/)/ {
+        name = $1; sub(/[,;(].*$/, "", name)
+        if (!n) { print "event " name " has no /// comment in " f > "/dev/stderr"; bad = 1; next }
+        desc = ""; sub_ = ""
+        for (i = 0; i < n; i++) {
+            if (buf[i] ~ /^- /) sub_ = sub_ "\n    " buf[i]
+            else if (buf[i] != "") desc = (desc == "" ? buf[i] : desc " " buf[i])
+        }
+        printf "- `%s` - %s%s\n", tolower(name), desc, sub_
+    }
+    { n = 0 }
+    END { exit bad }
+    ' "$1"
+}
+
 # The class with this name under src/, which has to be the only one
 find_class(){
     local found
@@ -357,22 +388,25 @@ gen_page(){
         jdoc_fields "$file" | list_lines > "$WORK/fields"
     fi
     jdoc_properties "$file" | list_lines > "$WORK/properties"
+    if grep -q '^/// <!-- events -->' "$file"; then jdoc_events "$file" > "$WORK/events" || exit 1; else : > "$WORK/events"; fi
     title="$(awk -F'\t' '$1 == "T" && $2 == "tums.title" { print $3; exit }' "$WORK/jdoc")"
     summary="$(awk -F'\t' '$1 == "T" && $2 == "tums.summary" { print $3; exit }' "$WORK/jdoc" | sed 's/"/\\"/g')"
     [ -n "$title" ] || { echo "src/$3 has no /// @tums.title on its class" >&2; exit 1; }
     [ -n "$summary" ] || { echo "src/$3 has no /// @tums.summary on its class" >&2; exit 1; }
     MARKER="$MARKER_JAVADOC"
-    awk -v methods="$WORK/methods" -v fields="$WORK/fields" -v props="$WORK/properties" '
+    awk -v methods="$WORK/methods" -v fields="$WORK/fields" -v props="$WORK/properties" -v events="$WORK/events" '
     { body[n++] = $0 }
     END {
         while ((getline l < methods) > 0) ml[m++] = l
         while ((getline l < fields) > 0) fl[f++] = l
         while ((getline l < props) > 0) pl[p++] = l
+        while ((getline l < events) > 0) el[e++] = l
         while (n && body[n - 1] ~ /^[ \t]*$/) n--              # trailing blank lines
         for (i = 0; i < n; i++) {
             if (body[i] ~ /^[ \t]*<!-- methods -->[ \t]*$/) { for (j = 0; j < m; j++) print ml[j]; mp = 1 }
             else if (body[i] ~ /^[ \t]*<!-- fields -->[ \t]*$/) { for (j = 0; j < f; j++) print fl[j]; fp = 1 }
             else if (body[i] ~ /^[ \t]*<!-- properties -->[ \t]*$/) { for (j = 0; j < p; j++) print pl[j]; pp = 1 }
+            else if (body[i] ~ /^[ \t]*<!-- events -->[ \t]*$/) { for (j = 0; j < e; j++) print el[j] }
             else print body[i]
         }
         if (!mp && m) { print ""; print "## Methods"; print ""; for (j = 0; j < m; j++) print ml[j] }
@@ -391,279 +425,6 @@ gen_developer(){
 gen_scripting(){
     local page file
     while IFS=$'\t' read -r page file; do gen_page script "$page" "$file"; done <<< "$SCRIPT_PAGES"
-}
-
-# ---------------------------------------------------------------------------- sidebar content
-#
-# The links at the top of the sidebar: key<tab>url
-#
-LINKS="github	https://github.com/TutlaMC/tums
-modrinth	https://modrinth.com/mod/tums
-website	https://tutla.net/tums"
-
-# The frequently asked questions: question<tab>answer
-#
-FAQ="What is Tums?	Tums is a Minecraft project that simplifies Minecraft development by introducing a simple, user-friendly scripting language based on Tusan.
-How do I install Tums?	Download the latest version from Modrinth, drag the .jar file into your mods/plugins folder, and start Minecraft.
-What file extension do Tums scripts use?	Tums scripts use the .tsn extension and live in [YOUR LOADER FOLDER]/tums/scripts/.
-Can I create my own syntax?	Yes. Tums is fully open source and ships with API support for adding custom syntax or building your own language on top of it."
-
-# The pages, in sidebar order: group<tab>label<tab>page
-#
-#   group  where the entry sits, nested with "/" ("-" for the top level)
-#   page   the file under docs/ without .md; an index page links to its folder
-#
-# Every page named here has to exist, and every page in docs/ has to be named here, so a new page cannot
-# be written and then left out of the sidebar by accident.
-#
-PAGES="-	Introduction	index
-Scripting	Getting started	scripting/index
-Scripting/Basics	Expressions	scripting/basic/expressions
-Scripting/Basics	Variables	scripting/basic/variable
-Scripting/Basics	Effects	scripting/basic/effects
-Scripting/Basics	Functions	scripting/basic/functions
-Scripting/Basics	Loops	scripting/basic/loops
-Scripting/Basics	If Statements	scripting/basic/if
-Scripting	Events	scripting/events
-Scripting/Types	Player	scripting/types/player
-Scripting/Types	Entity	scripting/types/entity
-Developer	Getting started	developer/index
-Developer	Spigot / Paper	developer/paper
-Developer/Nodes	Node	developer/node/index
-Developer/Nodes	Parsing	developer/node/parsing
-Developer	Context	developer/context
-Developer/Lexer	Rules	developer/lexer/rules
-Developer/Lexer	Patterns	developer/lexer/patterns
-Developer	Interpreter	developer/interpreter
-Developer	Creating your own language	developer/creating-your-own"
-
-# The developer pages and the class each is built from: page<tab>source file under src/
-#
-DEV_PAGES="developer/index	core/src/main/java/net/tutla/tums/TumsAPI.java
-developer/paper	paper/src/main/java/net/tutla/tums/paper/TumsPaper.java
-developer/node/index	core/src/main/java/net/tutla/tums/tusan/node/Node.java
-developer/node/parsing	core/src/main/java/net/tutla/tums/tusan/interpreter/TokenManager.java
-developer/context	core/src/main/java/net/tutla/tums/tusan/TusanContext.java
-developer/lexer/rules	core/src/main/java/net/tutla/tums/tusan/lexer/LexerRule.java
-developer/lexer/patterns	core/src/main/java/net/tutla/tums/tusan/lexer/util/WordedPattern.java
-developer/interpreter	core/src/main/java/net/tutla/tums/tusan/interpreter/Interpreter.java
-developer/creating-your-own	core/src/main/java/net/tutla/tums/tusan/lang/Tusan.java"
-
-# The scripting pages and the node or type each is built from: page<tab>source file under src/
-#
-SCRIPT_PAGES="scripting/basic/expressions	core/src/main/java/net/tutla/tums/tusan/nodes/expression/Expression.java
-scripting/basic/variable	core/src/main/java/net/tutla/tums/tusan/nodes/base/Name.java
-scripting/basic/effects	core/src/main/java/net/tutla/tums/tusan/nodes/base/Effect.java
-scripting/basic/functions	core/src/main/java/net/tutla/tums/tusan/nodes/base/function/FunctionNode.java
-scripting/basic/loops	core/src/main/java/net/tutla/tums/tusan/nodes/base/loops/Loop.java
-scripting/basic/if	core/src/main/java/net/tutla/tums/tusan/nodes/base/If.java
-scripting/types/player	common/src/main/java/net/tutla/tums/tums/objects/TumsPlayer.java
-scripting/types/entity	common/src/main/java/net/tutla/tums/tums/objects/TumsEntity.java"
-
-# ---------------------------------------------------------------------------- writing
-
-# Writes a page: frontmatter, the generated marker, then whatever came in on stdin. A page that is
-# already there keeps its created date, so regenerating does not rewrite history, and keeps its updated
-# date too for as long as nothing in it changed: only a page whose content differs gets today's.
-#
-emit(){
-    local rel="$1" title="$2" summary="$3" path="$OUT/$1" created updated
-    mkdir -p "$(dirname "$path")"
-    created="$TODAY"
-    updated="$TODAY"
-    if [ -f "$path" ]; then
-        created="$(sed -n 's/^created: "\(.*\)"$/\1/p' "$path" | head -1)"
-        updated="$(sed -n 's/^updated: "\(.*\)"$/\1/p' "$path" | head -1)"
-    fi
-    [ -z "$created" ] && created="$TODAY"
-    [ -z "$updated" ] && updated="$TODAY"
-    cat > "$WORK/body"
-    page(){
-        printf -- '---\ntitle: "%s"\nsummary: "%s"\ncreated: "%s"\nupdated: "%s"\nisdoc: true\n---\n\n' \
-            "$title" "$summary" "$created" "$1"
-        printf '%s\n\n' "$MARKER"
-        cat "$WORK/body"
-    }
-    # the same page under its old updated date: if that is what is already there, nothing changed
-    page "$updated" > "$WORK/page"
-    if diff -q "$path" "$WORK/page" >/dev/null 2>&1; then
-        [ "$CHECK" = 1 ] || echo "  docs/$rel (unchanged)"
-        return
-    fi
-    if [ "$CHECK" = 1 ]; then
-        echo "out of date: docs/$rel" >&2
-        echo stale >> "$WORK/stale"
-    else
-        page "$TODAY" > "$WORK/page"
-        mv "$WORK/page" "$path"
-        echo "  docs/$rel"
-    fi
-}
-
-# Writes a file that has no frontmatter, as is
-put(){
-    local rel="$1"
-    if [ "$CHECK" = 1 ]; then
-        diff -q "$OUT/$rel" "$WORK/$rel" >/dev/null 2>&1 \
-            || { echo "out of date: docs/$rel" >&2; echo stale >> "$WORK/stale"; }
-    elif diff -q "$OUT/$rel" "$WORK/$rel" >/dev/null 2>&1; then
-        echo "  docs/$rel (unchanged)"
-    else
-        mv "$WORK/$rel" "$OUT/$rel"
-        echo "  docs/$rel"
-    fi
-}
-
-# ---------------------------------------------------------------------------- pages
-
-# Turns every markdown link or image into the wiki into a site relative one, outside code blocks:
-#   [Scripting](https://wiki.tutla.net/tums/scripting/)  ->  [Scripting](/tums/scripting/)
-#   [Wiki](https://wiki.tutla.net)                       ->  [Wiki](/)
-relative_links(){
-    awk -v wiki="$WIKI" '
-    BEGIN { host = wiki; gsub(/\./, "\\.", host); sub(/^https?:\/\//, "https?://", host) }
-    /^[ \t]*(```[^`]*|~~~.*)$/ { fence = !fence; print; next }
-    fence { print; next }
-    {
-        line = $0; out = ""
-        while (match(line, "\\]\\(" host "/?")) {
-            out = out substr(line, 1, RSTART - 1) "](/"
-            line = substr(line, RSTART + RLENGTH)
-        }
-        print out line
-    }
-    '
-}
-
-# The landing page is the project README with its own heading taken off, since the wiki draws the
-# title from the frontmatter. The line under the heading becomes the summary.
-gen_index(){
-    local title summary
-    title="$(sed -n 's/^# \(.*\)$/\1/p' "$ROOT/README.md" | head -1)"
-    summary="$(awk 'f && NF { print; exit } /^# /{ f = 1 }' "$ROOT/README.md" | sed 's/"/\\"/g')"
-    [ -n "$title" ] || { echo "README.md has no top level heading" >&2; exit 1; }
-    awk '
-    !started && NR <= 4 { if (/^[-=]{3,}[ \t]*$/) { started = 1 } ; next }   # heading, tagline, rule
-    !started && NF == 0 { next }
-    { started = 1; if (NF || seen) { print; seen = 1 } }
-    ' "$ROOT/README.md" | relative_links | emit "index.md" "$title" "$summary"
-}
-
-# ---------------------------------------------------------------------------- javadoc
-#
-# The /// comment right above a class, as "B<tab><markdown line>" for the description and
-# "T<tab><tag><tab><value>" for each block tag. Annotations may sit between the comment and the class.
-# Inside a fenced code block a line starting with @ is code, not a tag.
-#
-jdoc_class(){
-    awk '
-    function out(   i, line, fence, tag, nt) {
-        fence = 0; nt = 0
-        for (i = 0; i < n; i++) {
-            line = buf[i]
-            if (line ~ /^[ \t]*(```[^`]*|~~~.*)$/) fence = !fence
-            if (!fence && line ~ /^@[A-Za-z]/) {
-                tag = line; sub(/^@/, "", tag); sub(/[ \t].*/, "", tag)
-                sub(/^@[^ \t]+[ \t]*/, "", line)
-                tags[nt] = tag; vals[nt++] = line
-                continue
-            }
-            if (nt) { if (line != "") vals[nt - 1] = vals[nt - 1] " " line; continue }
-            print "B\t" line
-        }
-        for (i = 0; i < nt; i++) print "T\t" tags[i] "\t" vals[i]
-    }
-    /^[ \t]*\/\/\/( |$)/ { line = $0; sub(/^[ \t]*\/\/\/ ?/, "", line); buf[n++] = line; next }
-    /^@[A-Za-z]/ { next }
-    /^(public|final|abstract|sealed|[ \t])*(class|interface|enum|record)[ \t]/ { if (n) out(); exit }
-    { n = 0 }
-    ' "$1"
-}
-
-# Every public method or constructor with a /// comment, as "<name(params)><tab><comment on one line>"
-jdoc_methods(){
-    awk '
-    /^[ \t]*\/\/\/( |$)/ { line = $0; sub(/^[ \t]*\/\/\/ ?/, "", line); buf[n++] = line; next }
-    /^[ \t]+@[A-Za-z]/ { next }
-    /^    public[ \t]/ && n {
-        sig = $0
-        while (sig !~ /[);{]/ && (getline more) > 0) sig = sig " " more   # a field ends at its ;
-        if (match(sig, /[A-Za-z_][A-Za-z0-9_]*[ \t]*\(/) && substr(sig, 1, RSTART) !~ /=/) {
-            sig = substr(sig, RSTART)
-            sig = substr(sig, 1, index(sig, ")"))
-            gsub(/[ \t]+/, " ", sig); sub(/ \(/, "(", sig); gsub(/\( /, "(", sig); gsub(/ \)/, ")", sig)
-            doc = ""; fence = 0
-            for (i = 0; i < n; i++) {
-                if (buf[i] ~ /^[ \t]*(```[^`]*|~~~.*)$/) fence = !fence
-                if (!fence && buf[i] ~ /^@[A-Za-z]/) break
-                if (buf[i] != "") doc = (doc == "" ? buf[i] : doc " " buf[i])
-            }
-            print sig "\t" doc
-        }
-    }
-    { n = 0 }
-    ' "$1"
-}
-
-# Every public field with a /// comment, as "<type name><tab><comment on one line>"
-jdoc_fields(){
-    awk '
-    /^[ \t]*\/\/\/( |$)/ { line = $0; sub(/^[ \t]*\/\/\/ ?/, "", line); buf[n++] = line; next }
-    /^[ \t]+@[A-Za-z]/ { next }
-    /^    public[ \t]/ && n {
-        decl = $0
-        sub(/[ \t]*(=|;).*$/, "", decl)
-        if (decl !~ /\(/) {
-            sub(/^[ \t]*public[ \t]+/, "", decl)
-            while (sub(/^(static|final|transient|volatile)[ \t]+/, "", decl)) {}
-            gsub(/[ \t]+/, " ", decl)
-            doc = ""
-            for (i = 0; i < n; i++) {
-                if (buf[i] ~ /^@[A-Za-z]/) break
-                if (buf[i] != "") doc = (doc == "" ? buf[i] : doc " " buf[i])
-            }
-            print decl "\t" doc
-        }
-    }
-    { n = 0 }
-    ' "$1"
-}
-
-# One developer page from the javadoc of its class
-gen_dev_page(){
-    local page="$1" file="$SRC/$2" title summary
-    [ -f "$file" ] || { echo "DEV_PAGES names a file that is not there: src/$2" >&2; exit 1; }
-    jdoc_class "$file" > "$WORK/jdoc"
-    jdoc_methods "$file" | awk -F'\t' '{ print "- `" $1 "`" ($2 == "" ? "" : " - " $2) }' > "$WORK/methods"
-    jdoc_fields "$file" | awk -F'\t' '{ print "- `" $1 "`" ($2 == "" ? "" : " - " $2) }' > "$WORK/fields"
-    title="$(awk -F'\t' '$1 == "T" && $2 == "tums.title" { print $3; exit }' "$WORK/jdoc")"
-    summary="$(awk -F'\t' '$1 == "T" && $2 == "tums.summary" { print $3; exit }' "$WORK/jdoc" | sed 's/"/\\"/g')"
-    [ -n "$title" ] || { echo "src/$2 has no /// @tums.title on its class" >&2; exit 1; }
-    [ -n "$summary" ] || { echo "src/$2 has no /// @tums.summary on its class" >&2; exit 1; }
-    MARKER="$MARKER_JAVADOC"
-    awk -F'\t' -v methods="$WORK/methods" -v fields="$WORK/fields" '
-    $1 == "B" { body[n++] = substr($0, 3) }
-    END {
-        while ((getline l < methods) > 0) ml[m++] = l
-        while ((getline l < fields) > 0) fl[f++] = l
-        while (n && body[n - 1] ~ /^[ \t]*$/) n--              # trailing blank lines
-        for (i = 0; i < n; i++) {
-            if (body[i] ~ /^[ \t]*<!-- methods -->[ \t]*$/) { for (j = 0; j < m; j++) print ml[j]; mp = 1 }
-            else if (body[i] ~ /^[ \t]*<!-- fields -->[ \t]*$/) { for (j = 0; j < f; j++) print fl[j]; fp = 1 }
-            else print body[i]
-        }
-        if (!mp && m) { print ""; print "## Methods"; print ""; for (j = 0; j < m; j++) print ml[j] }
-        if (!fp && f) { print ""; print "## Fields"; print ""; for (j = 0; j < f; j++) print fl[j] }
-    }
-    ' "$WORK/jdoc" | relative_links | emit "$page.md" "$title" "$summary"
-    MARKER="$MARKER_README"
-}
-
-gen_developer(){
-    local page file
-    while IFS=$'\t' read -r page file; do
-        gen_dev_page "$page" "$file"
-    done <<< "$DEV_PAGES"
 }
 
 # ---------------------------------------------------------------------------- sidebar
@@ -720,12 +481,29 @@ PY
 
 # ---------------------------------------------------------------------------- driver
 
+# Every page in docs/ this script does not write, so it is clear which ones still need editing by hand
+list_handwritten(){
+    local path rel found=""
+    while read -r path; do
+        rel="${path#"$OUT"/}"; rel="${rel%.md}"
+        [ "$rel" = index ] && continue
+        printf '%s\n%s\n' "$DEV_PAGES" "$SCRIPT_PAGES" | cut -f1 | grep -qxF "$rel" && continue
+        found="$found  docs/$rel.md
+"
+    done < <(find "$OUT" -name '*.md' | sort)
+    if [ -n "$found" ]; then
+        echo "written by hand, not generated:"
+        printf '%s' "$found"
+    fi
+}
+
 main(){
     [ "$CHECK" = 1 ] && echo "checking docs/ against README.md and src/" || echo "writing docs/ from README.md and src/"
     gen_index
     gen_developer
     gen_scripting
     gen_sidebar
+    list_handwritten
     if [ "$CHECK" = 1 ]; then
         [ -f "$WORK/stale" ] && { echo "docs/ is out of date: run ./docs/generate.sh" >&2; exit 1; }
         echo "docs/ is up to date"

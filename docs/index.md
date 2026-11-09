@@ -21,6 +21,8 @@ Tums is a Minecraft project that simplifies Minecraft development by introducing
 | NeoForge     | `mods/`    | `[YOUR MINECRAFT FOLDER]/tums/scripts/`      |
 | Spigot/Paper | `plugins/` | `[YOUR SERVER FOLDER]/plugins/Tums/scripts/` |
 
+On Fabric you also need [Fabric API](https://modrinth.com/mod/fabric-api) in your `mods/` folder. NeoForge and Spigot/Paper need nothing else.
+
 3. Start Minecraft and enjoy the simplicity of Tums!
 
 ## How to write scripts?
